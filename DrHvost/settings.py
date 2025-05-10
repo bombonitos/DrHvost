@@ -143,13 +143,43 @@ LOGIN_URL = 'login'              # URL для входа пользовател�
 ADMIN_LOGIN_URL = 'admin:login'  # URL для входа администраторов
 
 
+import logging
+
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s %(levelname)s %(message)s',
+)
+
+
+import os
+from dotenv import load_dotenv
+
+# Загрузка переменных из .env файла
+load_dotenv()
+
+print("EMAIL USER:", os.getenv("EMAIL_HOST_USER"))
+print("EMAIL PASS:", os.getenv("EMAIL_HOST_PASSWORD"))
+
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.sendgrid.net'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'apikey'  # Это должно быть 'apikey', не изменяйте
-EMAIL_HOST_PASSWORD = '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'  # Реальный API ключ
-DEFAULT_FROM_EMAIL = 'drhvost.vetclinic@gmail.com'   # Это ваш email
+EMAIL_HOST = 'smtp.yandex.ru'
+EMAIL_PORT = 465
+EMAIL_USE_SSL = True
+EMAIL_HOST_USER = 'bombonitos@yandex.ru'
+EMAIL_HOST_PASSWORD = 'pxjzuyhpnlouqdfe'  # твой пароль
+DEFAULT_FROM_EMAIL = 'bombonitos@yandex.ru'  # если не указано
 
 
-SENDGRID_SANDBOX_MODE_IN_DEBUG = False
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {  # Печатает в терминал
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',  # или DEBUG
+    },
+}

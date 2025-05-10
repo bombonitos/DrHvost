@@ -17,4 +17,5 @@ urlpatterns = [
     path('logout/', views.logout_view, name='logout'),
     path('profile/edit-pet/<int:pet_id>/', views.edit_pet, name='edit_pet'),
     path('profile/delete-pet/<int:pet_id>/', views.delete_pet, name='delete_pet'),
+
 ]

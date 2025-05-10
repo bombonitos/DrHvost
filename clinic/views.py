@@ -6,6 +6,8 @@ from django.http import JsonResponse
 from .forms import RegisterForm, PetForm, AppointmentForm
 from .models import Pet, Appointment, Vet
 from datetime import datetime
+from django.core.mail import send_mail
+from django.conf import settings
 import logging
 
 logger = logging.getLogger(__name__)
@@ -112,22 +114,46 @@ def booking(request):
     if request.method == 'POST':
         form = AppointmentForm(request.user, request.POST)
         if form.is_valid():
+            # Сохраняем данные записи
             appointment = form.save(commit=False)
             appointment.pet = form.cleaned_data['pet']
             appointment.vet = form.cleaned_data['vet']
             appointment.save()
+
+            # Получаем email пользователя и детали записи
+            user_email = request.user.email  # Извлекаем email текущего пользователя
+            appointment_details = 'Ваши детали записи'  # Примерные данные для письма
+
+            # Отправляем подтверждение записи
+            send_appointment_confirmation(user_email, appointment_details)
+
+            # Логируем успешную запись
             logger.info(f"Создана новая запись: {appointment.date} {appointment.time} - {appointment.pet.name} к врачу {appointment.vet.name}")
             messages.success(request, 'Запись успешно создана!')
-            return redirect('profile')
+            return redirect('profile')  # Перенаправляем на профиль пользователя
         else:
+            # Логируем ошибку валидации формы
             logger.error(f"Ошибка валидации формы: {form.errors}")
     else:
         form = AppointmentForm(request.user)
 
     return render(request, 'clinic/booking.html', {
         'form': form,
-        'vets': Vet.objects.filter(available=True)
+        'vets': Vet.objects.filter(available=True)  # Список доступных врачей
     })
+
+def send_appointment_confirmation(user_email, appointment_details):
+    """Функция отправки письма с подтверждением записи на прием"""
+    subject = 'Подтверждение записи на прием'
+    message = f'Здравствуйте! Вы успешно записались на прием. Вот ваши детали: {appointment_details}'
+    from_email = settings.EMAIL_HOST_USER  # Email отправителя
+    recipient_list = [user_email]  # Список получателей (email пользователя)
+
+    try:
+        send_mail(subject, message, from_email, recipient_list, fail_silently=False)
+    except Exception as e:
+        logger.error(f"Ошибка при отправке письма: {e}")
+        raise
 
 @login_required
 def get_available_times(request):
