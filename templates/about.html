@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+
+{% block title %}О клинике{% endblock %}
+
+{% block extra_css %}
+<style>
+    .about-hero {
+        background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('/static/images/clinic-interior.jpg');
+        background-size: cover;
+        background-position: center;
+        height: 400px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        color: white;
+        margin-top: -20px;
+    }
+    .about-content {
+        padding: 60px 0;
+    }
+    .feature-card {
+        text-align: center;
+        padding: 30px;
+        margin-bottom: 30px;
+        border-radius: 10px;
+        box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s;
+    }
+    .feature-card:hover {
+        transform: translateY(-5px);
+    }
+    .feature-icon {
+        font-size: 3rem;
+        color: #0d6efd;
+        margin-bottom: 20px;
+    }
+    .stats-section {
+        background-color: #f8f9fa;
+        padding: 60px 0;
+    }
+    .stat-item {
+        text-align: center;
+    }
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #0d6efd;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="about-hero">
+    <div class="container">
+        <h1 class="display-4">О нашей клинике</h1>
+        <p class="lead">Профессиональная забота о здоровье ваших питомцев</p>
+    </div>
+</section>
+
+<section class="about-content">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <h2>Наша история</h2>
+                <p>DrHvost была основана с целью предоставления высококачественной ветеринарной помощи домашним животным. Мы гордимся тем, что помогаем сохранять здоровье и благополучие ваших питомцев.</p>
+                <p>Наша клиника оснащена современным оборудованием и укомплектована опытными специалистами, готовыми помочь в любой ситуации.</p>
+            </div>
+            <div class="col-md-6">
+                <h2>Наша миссия</h2>
+                <p>Мы стремимся обеспечить:</p>
+                <ul>
+                    <li>Высококачественную ветеринарную помощь</li>
+                    <li>Индивидуальный подход к каждому пациенту</li>
+                    <li>Комфортные условия для животных и их владельцев</li>
+                    <li>Доступные цены на услуги</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="stats-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="stat-item">
+                    <div class="stat-number">10+</div>
+                    <div class="stat-label">Лет опыта</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-item">
+                    <div class="stat-number">5000+</div>
+                    <div class="stat-label">Довольных клиентов</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-item">
+                    <div class="stat-number">15+</div>
+                    <div class="stat-label">Специалистов</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-item">
+                    <div class="stat-number">24/7</div>
+                    <div class="stat-label">Режим работы</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="features-section py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">Наши преимущества</h2>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <i class="fas fa-stethoscope feature-icon"></i>
+                    <h3>Профессиональный подход</h3>
+                    <p>Наши специалисты имеют многолетний опыт работы и регулярно повышают квалификацию.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <i class="fas fa-clock feature-icon"></i>
+                    <h3>Удобное время</h3>
+                    <p>Мы работаем без выходных и праздников, чтобы вы могли получить помощь в любое время.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <i class="fas fa-heart feature-icon"></i>
+                    <h3>Забота о питомцах</h3>
+                    <p>Мы относимся к каждому питомцу как к члену семьи и делаем всё возможное для его здоровья.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %} 

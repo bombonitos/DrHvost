@@ -1,0 +1,954 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<!-- Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+
+<!-- Синяя секция на весь экран -->
+<div class="hero-section text-white">
+    <div class="background-image"></div>
+    <div class="container-fluid py-5">
+        <div class="row align-items-center">
+            <!-- Текст -->
+            <div class="col-md-6 ps-md-5 px-4">
+                <h1 class="display-4 fw-bold mb-4">Добро пожаловать в ветеринарную клинику DrHvost!</h1>
+                <p class="lead mb-4">Мы заботимся о здоровье ваших питомцев с любовью и профессионализмом.</p>
+                <a class="btn btn-light btn-lg text-primary px-4 fw-semibold" href="{% url 'booking' %}">Записаться на приём</a>
+            </div>
+
+            <!-- Картинка собаки -->
+            <div class="col-md-6 p-0">
+                <img src="{% static 'images/dogfront.png' %}" alt="Счастливый питомец" class="dog-image">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Остальной контент с белым фоном -->
+<section class="bg-white py-5 content-section">
+    <div class="container">
+        <h2 class="text-center mb-4">О нашей клинике</h2>
+        <div class="row">
+            <div class="col-md-12 mb-4">
+                <div class="card h-100 shadow">
+                    <div class="card-body">
+                        <h3 class="card-title">Наша миссия</h3>
+                        <p>Мы стремимся обеспечить высочайший уровень ветеринарной помощи для ваших питомцев. Наша клиника оснащена современным оборудованием и укомплектована опытными специалистами.</p>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check text-success me-2"></i>Современное оборудование</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Опытные специалисты</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Индивидуальный подход</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Комфортные условия</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Секция услуг -->
+<section class="bg-light py-5 content-section">
+    <div class="container">
+        <h2 class="text-center mb-5">Наши услуги</h2>
+        <div class="row g-4">
+            <div class="col-md-3">
+                <div class="service-card service-general">
+                    <div class="service-icon">
+                        <i class="fas fa-stethoscope"></i>
+                    </div>
+                    <h4>Общий осмотр</h4>
+                    <p>Комплексное обследование вашего питомца</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="service-card service-vaccination">
+                    <div class="service-icon">
+                        <i class="fas fa-syringe"></i>
+                    </div>
+                    <h4>Вакцинация</h4>
+                    <p>Защита от опасных заболеваний</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="service-card service-diagnostics">
+                    <div class="service-icon">
+                        <i class="fas fa-microscope"></i>
+                    </div>
+                    <h4>Диагностика</h4>
+                    <p>Точная постановка диагноза</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="service-card service-treatment">
+                    <div class="service-icon">
+                        <i class="fas fa-pills"></i>
+                    </div>
+                    <h4>Лечение</h4>
+                    <p>Эффективная терапия заболеваний</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="service-card service-surgery">
+                    <div class="service-icon">
+                        <i class="fas fa-user-md"></i>
+                    </div>
+                    <h4>Хирургия</h4>
+                    <p>Современные хирургические операции</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="service-card service-dental">
+                    <div class="service-icon">
+                        <i class="fas fa-tooth"></i>
+                    </div>
+                    <h4>Стоматология</h4>
+                    <p>Уход за зубами вашего питомца</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="service-card service-cardiology">
+                    <div class="service-icon">
+                        <i class="fas fa-heartbeat"></i>
+                    </div>
+                    <h4>Кардиология</h4>
+                    <p>Диагностика и лечение сердечных заболеваний</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="service-card service-neurology">
+                    <div class="service-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h4>Неврология</h4>
+                    <p>Лечение неврологических расстройств</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Секция специалистов -->
+<section class="bg-light py-5 content-section" id="specialists">
+    <div class="container">
+        <h2 class="text-center mb-4">Наши специалисты</h2>
+        <div class="row">
+            {% for vet in vets %}
+            <div class="col-md-3 mb-4">
+                <div class="vet-card">
+                    <div class="vet-photo-wrapper">
+                        <img src="{{ vet.photo.url }}" class="card-img-top" alt="{{ vet.name }}">
+                    </div>
+                    <div class="card-body">
+                        <div class="vet-info">
+                            <h5 class="card-title">{{ vet.name }}</h5>
+                            <p class="specialty">{{ vet.specialty }}</p>
+                            <p class="phone"><small>{{ vet.phone_number }}</small></p>
+                        </div>
+                        <a href="{% url 'booking' %}" class="btn btn-outline-primary">Записаться на приём</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- FAQ секция -->
+<section class="bg-white py-5 content-section" id="faq">
+    <div class="container">
+        <h2 class="text-center mb-5">Часто задаваемые вопросы</h2>
+        <div class="accordion" id="faqAccordion">
+            <!-- Вопрос 1 -->
+            <div class="accordion-item">
+                <h3 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                        Какие прививки нужны моему питомцу и в каком возрасте?
+                    </button>
+                </h3>
+                <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        <p>Питомцев необходимо вакцинировать от инфекционных заболеваний. Для кошек это:</p>
+                        <ul>
+                            <li>Ринотрахеит</li>
+                            <li>Калицивироз</li>
+                            <li>Панлейкопения</li>
+                        </ul>
+                        <p>Для собак:</p>
+                        <ul>
+                            <li>Чума плотоядных</li>
+                            <li>Парвовирусный энтерит</li>
+                            <li>Лептоспироз</li>
+                            <li>Аденовироз</li>
+                            <li>Парагрипп</li>
+                        </ul>
+                        <p>Помимо вышеперечисленных, для кошек и собак обязательной является вакцина от бешенства.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Вопрос 2 -->
+            <div class="accordion-item">
+                <h3 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                        Как часто нужно проводить профилактические осмотры?
+                    </button>
+                </h3>
+                <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        <p>Профилактические осмотры рекомендованы всем питомцам:</p>
+                        <ul>
+                            <li>Первое посещение - с момента появления малыша в новом доме</li>
+                            <li>Питомцы от 1 года до 7 лет без хронических заболеваний - 1-2 раза в год</li>
+                            <li>Питомцы старше 7 лет - каждые полгода</li>
+                            <li>При наличии хронических заболеваний - по индивидуальному графику</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Вопрос 3 -->
+            <div class="accordion-item">
+                <h3 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                        Какие меры профилактики важны для моего питомца?
+                    </button>
+                </h3>
+                <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        <ul class="list-unstyled">
+                            <li class="mb-3">✓ Обработки от экто- и эндопаразитов (блох, клещей и гельминтов)</li>
+                            <li class="mb-3">✓ Ежегодная вакцинация - защищает от опасных заболеваний</li>
+                            <li class="mb-3">✓ Забота о зубах - регулярная чистка и профилактика зубного камня</li>
+                            <li class="mb-3">✓ Уход за шерстью - регулярный груминг, особенно для длинношерстных пород</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Вопрос 4 -->
+            <div class="accordion-item">
+                <h3 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
+                        Какие изменения в поведении моего питомца могут свидетельствовать о проблемах со здоровьем?
+                    </button>
+                </h3>
+                <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        <p>Обратите внимание на следующие симптомы:</p>
+                        <ul>
+                            <li>Затворничество и вялость</li>
+                            <li>Непривычная агрессия</li>
+                            <li>Отказ от пищи</li>
+                            <li>Рвота или диарея</li>
+                            <li>Болевой синдром</li>
+                            <li>Одышка</li>
+                            <li>Проблемы с мочеиспусканием</li>
+                        </ul>
+                        <p class="mt-3">При любом недомогании необходимо немедленно проконсультироваться с ветеринарным специалистом.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Вопрос 5 -->
+            <div class="accordion-item">
+                <h3 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq5">
+                        Какие продукты вредны для кошек и собак?
+                    </button>
+                </h3>
+                <div id="faq5" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        <p>Особо опасные продукты:</p>
+                        <ul>
+                            <li>Шоколад</li>
+                            <li>Изюм</li>
+                            <li>Кофеин</li>
+                            <li>Ксилит/Ксилитол (заменитель сахара)</li>
+                            <li>Лук</li>
+                            <li>Чеснок</li>
+                        </ul>
+                        <p class="mt-3">Также опасны острая, соленая и сладкая еда, содержащая специи - они могут вызвать расстройство желудочно-кишечного тракта.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Вопрос 6 -->
+            <div class="accordion-item">
+                <h3 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq6">
+                        Какие препараты могут нанести вред моему питомцу?
+                    </button>
+                </h3>
+                <div id="faq6" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        <p>Опасные для питомцев препараты:</p>
+                        <ul>
+                            <li>Аспирин (ацетилсалициловая кислота) - особенно опасен для кошек</li>
+                            <li>Ибупрофен</li>
+                            <li>Диклофенак</li>
+                            <li>Нимесил</li>
+                            <li>Парацетамол</li>
+                            <li>Антигельминтные средства для людей</li>
+                        </ul>
+                        <p class="alert alert-warning mt-3">В случае попадания этих препаратов в организм питомца - незамедлительно обращайтесь в клинику!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Контактная секция -->
+<section class="bg-light py-5 content-section" id="contact">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <img src="{% static 'images/cat.png' %}" alt="Кот" class="img-fluid contact-image">
+            </div>
+            <div class="col-md-6">
+                <div class="contact-content">
+                    <h2 class="mb-4">Не нашли ответ на свой вопрос?</h2>
+                    <p class="lead mb-4">Свяжитесь с нами любым удобным способом, чтобы мы могли проконсультировать вас по интересующему вас вопросу!</p>
+                    <button class="btn btn-primary btn-lg contact-btn" data-bs-toggle="modal" data-bs-target="#contactModal">
+                        Связаться с нами
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Модальное окно для контактов -->
+<div class="modal fade" id="contactModal" tabindex="-1" aria-labelledby="contactModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <h5 class="modal-title" id="contactModalLabel">Наши контакты</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <div class="address-block mb-4">
+                    <i class="fas fa-map-marker-alt mb-3"></i>
+                    <h6>Наш адрес:</h6>
+                    <p class="mb-0">г. Астана, ул. Бараева 18.1</p>
+                </div>
+                <div class="contact-buttons">
+                    <a href="https://wa.me/+77002709655" target="_blank" class="btn btn-success btn-lg mb-3 w-100">
+                        <i class="fab fa-whatsapp me-2"></i>WhatsApp
+                    </a>
+                    <a href="https://mail.google.com/mail/?view=cm&to=drhvost.vetclinic@gmail.com&su=Вопрос по ветеринарным услугам&body=Здравствуйте!" target="_blank" class="btn btn-primary btn-lg mb-3 w-100">
+    <i class="fas fa-envelope me-2"></i>Написать на почту
+</a>
+                    <a href="{% url 'booking' %}" class="btn btn-purple btn-lg w-100">
+                        <i class="fas fa-calendar-check me-2"></i>Записаться на приём
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .hero-section {
+        background: linear-gradient(135deg, #e8f0fe 0%, rgb(0, 115, 255) 100%);
+        height: 85vh;
+        position: relative;
+        overflow: hidden;
+        width: 100vw;
+        left: 50%;
+        right: 50%;
+        margin-left: -50vw;
+        margin-right: -50vw;
+        display: flex;
+        align-items: center;
+        margin-top: -80px;
+        padding-top: 80px;
+    }
+
+    .background-image {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url('{% static "images/doctorback.png" %}');
+        background-size: cover;
+        background-position: center;
+        opacity: 0.2;
+        z-index: 1;
+    }
+
+    .hero-section .container-fluid {
+        position: relative;
+        z-index: 2;
+    }
+
+    .dog-image {
+        width: 100%;
+        height: 80vh;
+        object-fit: cover;
+        object-position: right bottom;
+        filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.1));
+        transition: transform 0.3s ease;
+        margin-right: -5rem;
+        position: relative;
+        right: -1rem;
+    }
+
+    .dog-image:hover {
+        transform: translateX(20px);
+    }
+
+    .hero-section .row {
+        width: 100%;
+        margin: 0;
+    }
+
+    .hero-section .col-md-6 {
+        z-index: 3;
+        position: relative;
+    }
+
+    .hero-section .display-4 {
+        color: #4169E1;
+        text-shadow: 0 2px 4px rgba(255, 255, 255, 0.5);
+        font-size: 3.5rem;
+        font-weight: 800;
+        line-height: 1.2;
+        margin-bottom: 1.5rem;
+        font-family: 'Montserrat', sans-serif;
+        letter-spacing: -0.5px;
+    }
+
+    .hero-section .lead {
+        color: white;
+        font-weight: 500;
+        font-size: 1.45rem;
+        line-height: 1.6;
+        margin-bottom: 2.5rem;
+        font-family: 'Open Sans', sans-serif;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        max-width: 90%;
+    }
+
+    .hero-section .btn-light {
+        background: #4169E1;
+        color: white !important;
+        border: none;
+        font-weight: 600;
+        border-radius: 12px;
+        padding: 1rem 2.5rem;
+        font-size: 1.2rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        letter-spacing: 0.5px;
+    }
+
+    .hero-section .btn-light:hover {
+        background: #2850c8;
+        color: white !important;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .content-section {
+        padding: 6rem 4rem;
+    }
+
+    .content-section h2 {
+        font-size: 2.8rem;
+        font-weight: 800;
+        color: #2d3748;
+        margin-bottom: 3rem;
+        text-align: center;
+        font-family: 'Montserrat', sans-serif;
+        letter-spacing: -0.5px;
+    }
+
+    .card {
+        border: none;
+        border-radius: 16px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    .card-title {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 700;
+        color: #2d3748;
+    }
+
+    .card-body {
+        padding: 2rem;
+    }
+
+    .list-unstyled li {
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        font-size: 1.1rem;
+    }
+
+    .list-unstyled i {
+        font-size: 1.2rem;
+        margin-right: 1rem;
+        color: #4169E1;
+    }
+
+    .shadow {
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08) !important;
+    }
+
+    .vet-card {
+        text-align: center;
+        margin-bottom: 2rem;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .vet-card .card-body {
+        padding: 1.5rem 1rem;
+        background: transparent;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+    }
+
+    .vet-info {
+        flex-grow: 1;
+        margin-bottom: 0.5rem;
+    }
+
+    .vet-photo-wrapper {
+        width: 250px;
+        height: 250px;
+        margin: 0 auto 1.5rem;
+        border-radius: 50%;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    .vet-photo-wrapper:hover {
+        box-shadow: 0 15px 35px rgba(65, 105, 225, 0.2);
+        transform: translateY(-5px);
+    }
+
+    .vet-card img.card-img-top {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 50%;
+        transition: transform 0.5s ease;
+    }
+
+    .vet-card:hover img.card-img-top {
+        transform: scale(1.1);
+    }
+
+    .vet-card .card-title {
+        font-size: 1.4rem;
+        margin-bottom: 0.5rem;
+        color: #2d3748;
+    }
+
+    .vet-card .specialty {
+        color: #4169E1;
+        font-weight: 600;
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .vet-card .phone {
+        color: #718096;
+        font-size: 0.95rem;
+        margin-bottom: 0;
+    }
+
+    .vet-card .btn-outline-primary {
+        border-radius: 25px;
+        padding: 0.6rem 1.5rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        margin-top: auto;
+        background: white;
+        color: #4169E1;
+        border: 2px solid #4169E1;
+    }
+
+    .vet-card .btn-outline-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(65, 105, 225, 0.2);
+        background: #4169E1;
+        color: white;
+    }
+
+    @media (max-width: 768px) {
+        .hero-section .container-fluid {
+            padding: 1rem;
+        }
+
+        .display-4 {
+            font-size: 2.5rem;
+        }
+
+        .lead {
+            font-size: 1.2rem;
+        }
+
+        .vet-photo-wrapper {
+            width: 200px;
+            height: 200px;
+        }
+    }
+
+    /* Стили для FAQ */
+    .accordion-item {
+        border: none;
+        margin-bottom: 1rem;
+    }
+
+    .accordion-button {
+        background: #f8fafc;
+        border-radius: 15px !important;
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 600;
+        font-size: 1.2rem;
+        color: #2d3748;
+        padding: 1.5rem 2rem;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        letter-spacing: -0.3px;
+    }
+
+    .accordion-button:not(.collapsed) {
+        background: #4169E1;
+        color: white;
+    }
+
+    .accordion-button:focus {
+        box-shadow: none;
+        border-color: rgba(65, 105, 225, 0.2);
+    }
+
+    .accordion-button::after {
+        background-size: 1.2rem;
+        transition: all 0.3s ease;
+    }
+
+    .accordion-body {
+        padding: 2rem;
+        font-size: 1.1rem;
+        line-height: 1.7;
+        color: #4a5568;
+    }
+
+    .accordion-body ul {
+        padding-left: 1.2rem;
+    }
+
+    .accordion-body li {
+        margin-bottom: 0.5rem;
+    }
+
+    .alert-warning {
+        background-color: #fff3cd;
+        border-color: #ffeeba;
+        color: #856404;
+        border-radius: 8px;
+    }
+
+    /* Стили для контактной секции */
+    .contact-image {
+        max-width: 100%;
+        height: auto;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .contact-content {
+        padding: 2rem;
+    }
+
+    .contact-content h2 {
+        font-size: 2.8rem;
+        font-weight: 800;
+        color: #2d3748;
+        margin-bottom: 1.5rem;
+        font-family: 'Montserrat', sans-serif;
+        letter-spacing: -0.5px;
+    }
+
+    .contact-content .lead {
+        font-size: 1.3rem;
+        line-height: 1.7;
+        color: #4a5568;
+        margin-bottom: 2.5rem;
+    }
+
+    .contact-btn {
+        padding: 1.2rem 3rem;
+        font-size: 1.2rem;
+        font-weight: 600;
+        border-radius: 15px;
+        background: #4169E1;
+        border: none;
+        transition: all 0.3s ease;
+        letter-spacing: 0.5px;
+    }
+
+    .contact-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(65, 105, 225, 0.3);
+        background: #2850c8;
+    }
+
+    /* Стили для модального окна */
+    .modal-content {
+        border-radius: 20px;
+        border: none;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .modal-header {
+        padding: 1.5rem;
+    }
+
+    .modal-title {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 700;
+        font-size: 1.5rem;
+        color: #2d3748;
+    }
+
+    .modal-body {
+        padding: 2rem;
+    }
+
+    .address-block {
+        background: #f8fafc;
+        padding: 2rem;
+        border-radius: 12px;
+    }
+
+    .address-block i {
+        font-size: 2rem;
+        color: #4169E1;
+        display: block;
+    }
+
+    .address-block h6 {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 600;
+        color: #2d3748;
+        margin-bottom: 0.5rem;
+    }
+
+    .contact-buttons .btn {
+        padding: 1rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .contact-buttons .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-success {
+        background: #25D366;
+        border: none;
+    }
+
+    .btn-success:hover {
+        background: #1fa855;
+    }
+
+    @media (max-width: 768px) {
+        .contact-content {
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .contact-content h2 {
+            font-size: 2rem;
+        }
+
+        .contact-image {
+            margin-bottom: 2rem;
+        }
+    }
+
+    .btn-logout {
+        color: #FF6B6B !important;
+        border: 2px solid #FFE5E5;
+        background-color: #FFE5E5;
+        transition: all 0.3s ease;
+    }
+
+    .btn-logout:hover {
+        background-color: #FF6B6B;
+        color: white !important;
+        border-color: #FF6B6B;
+    }
+
+    /* Стили для карточек услуг */
+    .service-card {
+        background: white;
+        border-radius: 20px;
+        padding: 2.5rem;
+        text-align: center;
+        height: 100%;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .service-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .service-icon {
+        width: 90px;
+        height: 90px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 2rem;
+        transition: all 0.3s ease;
+    }
+
+    .service-icon i {
+        font-size: 2rem;
+        transition: all 0.3s ease;
+    }
+
+    /* Цвета для каждой услуги */
+    .service-general .service-icon {
+        background: #FFE5E5;
+    }
+    .service-general .service-icon i {
+        color: #FF6B6B;
+    }
+    .service-general:hover .service-icon {
+        background: #FF6B6B;
+    }
+
+    .service-vaccination .service-icon {
+        background: #FFF4E5;
+    }
+    .service-vaccination .service-icon i {
+        color: #FFA94D;
+    }
+    .service-vaccination:hover .service-icon {
+        background: #FFA94D;
+    }
+
+    .service-diagnostics .service-icon {
+        background: #E5F6FF;
+    }
+    .service-diagnostics .service-icon i {
+        color: #4DABF7;
+    }
+    .service-diagnostics:hover .service-icon {
+        background: #4DABF7;
+    }
+
+    .service-treatment .service-icon {
+        background: #E5FFE5;
+    }
+    .service-treatment .service-icon i {
+        color: #51CF66;
+    }
+    .service-treatment:hover .service-icon {
+        background: #51CF66;
+    }
+
+    .service-surgery .service-icon {
+        background: #F3E5FF;
+    }
+    .service-surgery .service-icon i {
+        color: #9775FA;
+    }
+    .service-surgery:hover .service-icon {
+        background: #9775FA;
+    }
+
+    .service-dental .service-icon {
+        background: #FFE5F3;
+    }
+    .service-dental .service-icon i {
+        color: #F783AC;
+    }
+    .service-dental:hover .service-icon {
+        background: #F783AC;
+    }
+
+    .service-cardiology .service-icon {
+        background: #E5FFF3;
+    }
+    .service-cardiology .service-icon i {
+        color: #37B24D;
+    }
+    .service-cardiology:hover .service-icon {
+        background: #37B24D;
+    }
+
+    .service-neurology .service-icon {
+        background: #FFF3E5;
+    }
+    .service-neurology .service-icon i {
+        color: #FD7E14;
+    }
+    .service-neurology:hover .service-icon {
+        background: #FD7E14;
+    }
+
+    .service-card:hover .service-icon i {
+        color: white;
+    }
+
+    .service-card h4 {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 700;
+        color: #2d3748;
+        margin-bottom: 1rem;
+        font-size: 1.3rem;
+        letter-spacing: -0.3px;
+    }
+
+    .service-card p {
+        color: #718096;
+        font-size: 1rem;
+        margin-bottom: 0;
+        line-height: 1.6;
+    }
+
+    @media (max-width: 768px) {
+        .service-card {
+            padding: 2rem;
+        }
+
+        .service-icon {
+            width: 70px;
+            height: 70px;
+        }
+
+        .service-icon i {
+            font-size: 1.5rem;
+        }
+    }
+</style>
+
+{% endblock %}

@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+
+{% block title %}Наши врачи{% endblock %}
+
+{% block extra_css %}
+<style>
+    .doctors-hero {
+        background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('/static/images/doctors-bg.jpg');
+        background-size: cover;
+        background-position: center;
+        height: 300px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        color: white;
+        margin-top: -20px;
+    }
+    .doctors-section {
+        padding: 60px 0;
+    }
+    .vet-card {
+        margin-bottom: 30px;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s;
+    }
+    .vet-card:hover {
+        transform: translateY(-5px);
+    }
+    .vet-photo {
+        width: 100%;
+        height: 300px;
+        object-fit: cover;
+    }
+    .vet-info {
+        padding: 20px;
+        background: white;
+    }
+    .vet-name {
+        font-size: 1.2rem;
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+    .vet-specialty {
+        color: #6c757d;
+        margin-bottom: 10px;
+    }
+    .vet-description {
+        font-size: 0.9rem;
+        color: #6c757d;
+    }
+    .specialty-filter {
+        margin-bottom: 30px;
+    }
+    .specialty-btn {
+        margin: 5px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="doctors-hero">
+    <div class="container">
+        <h1 class="display-4">Наши специалисты</h1>
+        <p class="lead">Профессиональные ветеринары с многолетним опытом</p>
+    </div>
+</section>
+
+<section class="doctors-section">
+    <div class="container">
+        <div class="specialty-filter text-center">
+            <button class="btn btn-outline-primary specialty-btn active" data-specialty="all">Все специалисты</button>
+            {% for specialty in specialties %}
+            <button class="btn btn-outline-primary specialty-btn" data-specialty="{{ specialty }}">{{ specialty }}</button>
+            {% endfor %}
+        </div>
+
+        <div class="row">
+            {% for vet in vets %}
+            <div class="col-md-3 vet-item" data-specialty="{{ vet.specialty }}">
+                <div class="vet-card">
+                    {% if vet.photo %}
+                        <img src="{{ vet.photo.url }}" alt="{{ vet.name }}" class="vet-photo">
+                    {% else %}
+                        <img src="/static/images/default-vet.jpg" alt="{{ vet.name }}" class="vet-photo">
+                    {% endif %}
+                    <div class="vet-info">
+                        <div class="vet-name">{{ vet.name }}</div>
+                        <div class="vet-specialty">{{ vet.specialty }}</div>
+                        <div class="vet-description">
+                            Профессиональный ветеринар с опытом работы более 5 лет.
+                            Специализируется на лечении мелких домашних животных.
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const specialtyButtons = document.querySelectorAll('.specialty-btn');
+    const vetItems = document.querySelectorAll('.vet-item');
+
+    specialtyButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            // Удаляем активный класс у всех кнопок
+            specialtyButtons.forEach(btn => btn.classList.remove('active'));
+            // Добавляем активный класс нажатой кнопке
+            this.classList.add('active');
+
+            const specialty = this.dataset.specialty;
+
+            vetItems.forEach(item => {
+                if (specialty === 'all' || item.dataset.specialty === specialty) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+    });
+});
+</script>
+{% endblock %} 

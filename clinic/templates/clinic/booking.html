@@ -1,0 +1,331 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="booking-section">
+    <div class="background-overlay"></div>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="booking-card">
+                    <div class="booking-header">
+                        <h2>Запись к врачу</h2>
+                        <p class="lead">Выберите удобное время для визита</p>
+                    </div>
+                    <div class="booking-body">
+                        <form method="post" id="booking-form">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label for="{{ form.pet.id_for_label }}" class="form-label">Питомец</label>
+                                {{ form.pet }}
+                                {% if form.pet.errors %}
+                                    <div class="alert alert-danger">{{ form.pet.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="form-group">
+                                <label for="{{ form.vet.id_for_label }}" class="form-label">Врач</label>
+                                {{ form.vet }}
+                                {% if form.vet.errors %}
+                                    <div class="alert alert-danger">{{ form.vet.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="form-group">
+                                <label for="{{ form.date.id_for_label }}" class="form-label">Дата</label>
+                                {{ form.date }}
+                                {% if form.date.errors %}
+                                    <div class="alert alert-danger">{{ form.date.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="form-group">
+                                <label for="{{ form.time.id_for_label }}" class="form-label">Время</label>
+                                {{ form.time }}
+                                {% if form.time.errors %}
+                                    <div class="alert alert-danger">{{ form.time.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="form-group">
+                                <label for="{{ form.description.id_for_label }}" class="form-label">Описание проблемы</label>
+                                {{ form.description }}
+                                {% if form.description.errors %}
+                                    <div class="alert alert-danger">{{ form.description.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary">Записаться</button>
+                                <a href="{% url 'profile' %}" class="btn btn-secondary">Отмена</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .booking-section {
+        min-height: auto;
+        background-image: url('{% static "images/vet-background.jpg" %}');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        position: relative;
+        padding: 2rem 0;
+        margin-top: -80px;
+        padding-top: 80px;
+        width: 100vw;
+        left: 50%;
+        right: 50%;
+        margin-left: -50vw;
+        margin-right: -50vw;
+    }
+
+    .background-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: none;
+    }
+
+    .booking-card {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        overflow: hidden;
+        position: relative;
+        z-index: 1;
+        max-width: 700px;
+        margin: 0 auto;
+    }
+
+    .booking-header {
+        background: #4169E1;
+        color: white;
+        padding: 1rem;
+        text-align: center;
+    }
+
+    .booking-header h2 {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 800;
+        font-size: 1.8rem;
+        margin-bottom: 0.2rem;
+        letter-spacing: -0.5px;
+    }
+
+    .booking-header .lead {
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 0.9rem;
+        margin-bottom: 0;
+    }
+
+    .booking-body {
+        padding: 1.2rem;
+    }
+
+    .form-group {
+        margin-bottom: 0.8rem;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #2d3748;
+        margin-bottom: 0.3rem;
+        font-size: 0.95rem;
+        display: block;
+    }
+
+    .form-control {
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 0.5rem 0.7rem;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+        background-color: white;
+        width: 100%;
+    }
+
+    .form-control:focus {
+        border-color: #4169E1;
+        box-shadow: 0 0 0 3px rgba(65, 105, 225, 0.1);
+        outline: none;
+    }
+
+    .booking-body textarea.form-control {
+        min-height: 60px;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        margin-top: 0.3rem;
+        resize: vertical;
+        display: block !important;
+        border: 2px solid #e2e8f0 !important;
+        border-radius: 10px !important;
+        padding: 0.5rem 0.7rem !important;
+        font-size: 0.9rem !important;
+        background-color: white !important;
+    }
+
+    .booking-body textarea.form-control:focus {
+        border-color: #4169E1 !important;
+        box-shadow: 0 0 0 3px rgba(65, 105, 225, 0.1) !important;
+        outline: none !important;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 0.8rem;
+        margin-top: 1rem;
+    }
+
+    .btn {
+        padding: 0.5rem 1.5rem;
+        font-weight: 600;
+        border-radius: 10px;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary {
+        background: #4169E1;
+        border: none;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background: #2850c8;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(65, 105, 225, 0.3);
+    }
+
+    .btn-secondary {
+        background: #e2e8f0;
+        border: none;
+        color: #4a5568;
+    }
+
+    .btn-secondary:hover {
+        background: #cbd5e0;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .alert-danger {
+        background: #FFF5F5;
+        border: none;
+        color: #E53E3E;
+        border-radius: 8px;
+        padding: 0.8rem 1rem;
+        margin-top: 0.5rem;
+    }
+
+    @media (max-width: 768px) {
+        .booking-section {
+            padding: 2rem 0;
+        }
+
+        .booking-header {
+            padding: 1.5rem;
+        }
+
+        .booking-header h2 {
+            font-size: 1.8rem;
+        }
+
+        .booking-body {
+            padding: 1.5rem;
+        }
+
+        .form-actions {
+            flex-direction: column;
+        }
+
+        .btn {
+            width: 100%;
+        }
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const vetSelect = document.getElementById('{{ form.vet.id_for_label }}');
+    const dateInput = document.getElementById('{{ form.date.id_for_label }}');
+    const timeSelect = document.getElementById('{{ form.time.id_for_label }}');
+
+    function updateAvailableTimes() {
+        const vetId = vetSelect.value;
+        const date = dateInput.value;
+
+        console.log('Выбран врач:', vetId);
+        console.log('Выбрана дата:', date);
+
+        if (vetId && date) {
+            // Сначала очищаем текущие опции
+            timeSelect.innerHTML = '<option value="">Выберите время</option>';
+            
+            const url = `{% url 'get_available_times' %}?vet_id=${vetId}&date=${date}`;
+            console.log('Отправляем запрос по URL:', url);
+            
+            fetch(url)
+                .then(response => {
+                    console.log('Статус ответа:', response.status);
+                    if (!response.ok) {
+                        throw new Error('Ошибка сервера: ' + response.status);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Получены данные:', data);
+                    if (data.error) {
+                        console.error('Ошибка от сервера:', data.error);
+                        timeSelect.innerHTML = `<option value="">${data.error}</option>`;
+                        return;
+                    }
+
+                    // Добавляем доступные временные слоты
+                    if (data.available_times && data.available_times.length > 0) {
+                        console.log('Доступные времена:', data.available_times);
+                        // Сортируем времена
+                        data.available_times.sort((a, b) => {
+                            return a.value.localeCompare(b.value);
+                        });
+                        // Добавляем опции
+                        data.available_times.forEach(time => {
+                            const option = document.createElement('option');
+                            option.value = time.value;
+                            option.textContent = time.display;
+                            timeSelect.appendChild(option);
+                        });
+                    } else {
+                        console.log('Нет доступного времени');
+                        timeSelect.innerHTML = '<option value="">Нет доступного времени на эту дату</option>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Ошибка при запросе:', error);
+                    timeSelect.innerHTML = '<option value="">Ошибка загрузки времени</option>';
+                });
+        } else {
+            console.log('Не выбраны врач или дата');
+            timeSelect.innerHTML = '<option value="">Сначала выберите врача и дату</option>';
+        }
+    }
+
+    // Обновляем доступное время при изменении врача или даты
+    vetSelect.addEventListener('change', updateAvailableTimes);
+    dateInput.addEventListener('change', updateAvailableTimes);
+    
+    // Вызываем функцию при загрузке страницы, если врач и дата уже выбраны
+    if (vetSelect.value && dateInput.value) {
+        updateAvailableTimes();
+    }
+});
+</script>
+{% endblock %} 

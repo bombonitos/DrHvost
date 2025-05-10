@@ -1,0 +1,379 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Главная{% endblock %}
+
+{% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+    body {
+        font-family: 'Montserrat', sans-serif;
+        overflow-x: hidden;
+        margin: 0;
+        padding: 0;
+    }
+
+    .hero-section {
+        position: relative;
+        background: #4169E1;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        text-align: left;
+        color: white;
+        overflow: hidden;
+        margin-top: -76px;
+        padding-top: 76px;
+    }
+
+    .paw-decoration {
+        position: absolute;
+        right: -300px;
+        bottom: -300px;
+        width: 1000px;
+        height: 1000px;
+        opacity: 0.15;
+        transform: rotate(-15deg);
+        z-index: 0;
+    }
+
+    .bone-decoration {
+        position: absolute;
+        top: 50px;
+        right: 100px;
+        width: 200px;
+        height: auto;
+        opacity: 0.12;
+        transform: rotate(45deg);
+        z-index: 0;
+    }
+
+    .hero-content {
+        max-width: 600px;
+        padding: 40px;
+        position: relative;
+        z-index: 2;
+        margin-left: 5%;
+        animation: slideIn 1s ease-out;
+    }
+
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateX(-100px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    .hero-title {
+        font-size: 4rem;
+        font-weight: 800;
+        margin-bottom: 30px;
+        line-height: 1.2;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .hero-text {
+        font-size: 1.6rem;
+        margin-bottom: 40px;
+        font-weight: 500;
+        line-height: 1.6;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+        opacity: 0.9;
+    }
+
+    .hero-btn {
+        padding: 18px 45px;
+        font-size: 1.3rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        background: #fff;
+        color: #0052d4;
+        border: none;
+        border-radius: 50px;
+        transition: all 0.4s ease;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .hero-btn:hover {
+        transform: translateY(-5px) scale(1.02);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+        background: #f8f9fa;
+        color: #00bfff;
+    }
+
+    .hero-btn::after {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(45deg, rgba(255,255,255,0.2), transparent);
+        transform: rotate(45deg);
+        transition: all 0.3s ease;
+    }
+
+    .hero-btn:hover::after {
+        transform: rotate(45deg) translate(50%, 50%);
+    }
+
+    .hero-image {
+        position: absolute;
+        bottom: 0;
+        right: -100px;
+        width: 800px;
+        height: auto;
+        z-index: 1;
+        animation: float 6s ease-in-out infinite;
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-20px); }
+    }
+
+    .wave-bottom {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        overflow: hidden;
+        line-height: 0;
+        transform: rotate(180deg);
+    }
+
+    .wave-bottom svg {
+        position: relative;
+        display: block;
+        width: calc(100% + 1.3px);
+        height: 150px;
+        transform: rotateY(180deg);
+    }
+
+    .wave-bottom .shape-fill {
+        fill: #FFFFFF;
+    }
+
+    @media (max-width: 768px) {
+        .hero-section {
+            height: 100vh;
+        }
+        .hero-content {
+            margin-left: 5%;
+            padding: 20px;
+        }
+        .hero-title {
+            font-size: 2.8rem;
+        }
+        .hero-text {
+            font-size: 1.3rem;
+        }
+        .hero-image {
+            width: 400px;
+            right: -100px;
+        }
+    }
+
+    .about-section {
+        padding: 100px 0;
+        background-color: #fff;
+        position: relative;
+    }
+
+    .about-section p {
+        font-size: 1.2rem;
+        line-height: 1.8;
+        color: #444;
+        margin-bottom: 25px;
+    }
+
+    .features-list li {
+        font-size: 1.2rem;
+        margin-bottom: 25px;
+        display: flex;
+        align-items: center;
+        transition: transform 0.3s ease;
+    }
+
+    .features-list li:hover {
+        transform: translateX(10px);
+    }
+
+    .features-list i {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, #2980b9, #8e44ad);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 20px;
+        font-size: 1.1rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .section-title {
+        font-size: 3rem;
+        font-weight: 800;
+        color: #2c3e50;
+        margin-bottom: 60px;
+        text-align: center;
+        position: relative;
+    }
+
+    .section-title:after {
+        content: '';
+        display: block;
+        width: 80px;
+        height: 5px;
+        background: linear-gradient(135deg, #2980b9, #8e44ad);
+        margin: 25px auto 0;
+        border-radius: 3px;
+    }
+
+    .doctors-section {
+        padding: 100px 0;
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    }
+
+    .vet-card {
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        margin-bottom: 30px;
+        transition: all 0.4s ease;
+    }
+
+    .vet-card:hover {
+        transform: translateY(-15px) scale(1.02);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    .vet-photo {
+        width: 100%;
+        height: 300px;
+        object-fit: cover;
+        transition: transform 0.4s ease;
+    }
+
+    .vet-card:hover .vet-photo {
+        transform: scale(1.1);
+    }
+
+    .vet-info {
+        padding: 25px;
+        text-align: center;
+        background: linear-gradient(to bottom, #fff, #f8f9fa);
+    }
+
+    .vet-name {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 10px;
+    }
+
+    .vet-specialty {
+        color: #2980b9;
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="hero-section">
+    <img src="{% static 'images/paw-bg.png' %}" alt="Декоративная лапка" class="paw-decoration">
+    <img src="{% static 'images/bone-bg.png' %}" alt="Декоративная косточка" class="bone-decoration">
+    <div class="container position-relative">
+        <div class="row">
+            <div class="col-lg-7">
+                <div class="hero-content">
+                    <h1 class="hero-title">Добро пожаловать в DrHvost</h1>
+                    <p class="hero-text">Профессиональная ветеринарная помощь для ваших питомцев с заботой и любовью</p>
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'booking' %}" class="btn hero-btn">Записаться на прием</a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="btn hero-btn">Записаться на прием</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <img src="{% static 'images/animal.png' %}" alt="Счастливый питомец" class="hero-image">
+    <div class="wave-bottom">
+        <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+            <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" class="shape-fill"></path>
+        </svg>
+    </div>
+</section>
+
+<section class="about-section">
+    <div class="container">
+        <h2 class="section-title">О нашей клинике</h2>
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <p>DrHvost - это современная ветеринарная клиника, где работают опытные специалисты. Мы предоставляем полный спектр ветеринарных услуг для ваших питомцев.</p>
+                <p>Наша миссия - обеспечить здоровье и благополучие ваших домашних животных с помощью профессионального ухода и внимательного отношения.</p>
+            </div>
+            <div class="col-md-6">
+                <ul class="list-unstyled features-list">
+                    <li>
+                        <i class="fas fa-stethoscope"></i>
+                        <span>Современное диагностическое оборудование</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-user-md"></i>
+                        <span>Опытные ветеринарные специалисты</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-heart"></i>
+                        <span>Индивидуальный подход к каждому питомцу</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-clock"></i>
+                        <span>Круглосуточная неотложная помощь</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-home"></i>
+                        <span>Комфортные условия для питомцев</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="doctors-section">
+    <div class="container">
+        <h2 class="section-title">Наши специалисты</h2>
+        <div class="row">
+            {% for vet in vets %}
+            <div class="col-md-3">
+                <div class="vet-card">
+                    {% if vet.photo %}
+                        <img src="{{ vet.photo.url }}" alt="{{ vet.name }}" class="vet-photo">
+                    {% else %}
+                        <img src="/static/images/default-vet.jpg" alt="{{ vet.name }}" class="vet-photo">
+                    {% endif %}
+                    <div class="vet-info">
+                        <div class="vet-name">{{ vet.name }}</div>
+                        <div class="vet-specialty">{{ vet.specialty }}</div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %} 

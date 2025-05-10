@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+{% load clinic_extras %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <!-- Информация о враче -->
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    {% if vet.photo %}
+                        <img src="{{ vet.photo.url }}" class="rounded-circle mb-3" alt="{{ vet.name }}" style="width: 200px; height: 200px; object-fit: cover;">
+                    {% else %}
+                        <div class="bg-light rounded-circle mb-3 mx-auto d-flex align-items-center justify-content-center" style="width: 200px; height: 200px;">
+                            <i class="fas fa-user-md fa-4x text-primary"></i>
+                        </div>
+                    {% endif %}
+                    <h3 class="card-title">{{ vet.name }}</h3>
+                    {% if vet.specialty %}
+                        <p class="text-muted mb-3">{{ vet.specialty }}</p>
+                    {% endif %}
+                    {% if vet.phone_number %}
+                        <p class="mb-2">
+                            <i class="fas fa-phone text-primary me-2"></i>
+                            {{ vet.phone_number }}
+                        </p>
+                    {% endif %}
+                    <div class="mt-3">
+                        <h5 class="mb-3">Статистика</h5>
+                        <div class="row text-center">
+                            <div class="col-6">
+                                <h4 class="text-primary">{{ upcoming_appointments|length }}</h4>
+                                <p class="text-muted">Предстоящие приёмы</p>
+                            </div>
+                            <div class="col-6">
+                                <h4 class="text-primary">{{ past_appointments|length }}</h4>
+                                <p class="text-muted">Завершённые приёмы</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Записи к врачу -->
+        <div class="col-md-8">
+            <!-- Предстоящие записи -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="h4 mb-0">Предстоящие приёмы</h2>
+                </div>
+                <div class="card-body">
+                    {% if upcoming_by_date %}
+                        {% for date, date_appointments in upcoming_by_date.items %}
+                            <div class="mb-4">
+                                <h5 class="border-bottom pb-2">{{ date|date:"d.m.Y" }}</h5>
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Время</th>
+                                                <th>Питомец</th>
+                                                <th>Владелец</th>
+                                                <th>Телефон</th>
+                                                <th>Статус</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for appointment in date_appointments %}
+                                                <tr>
+                                                    <td>{{ appointment.time|time:"H:i" }}</td>
+                                                    <td>{{ appointment.pet.name }}</td>
+                                                    <td>{{ appointment.pet.owner_name }}</td>
+                                                    <td>{{ appointment.pet.contact_phone }}</td>
+                                                    <td>
+                                                        {% if appointment.status == 'pending' %}
+                                                            <span class="badge bg-warning">Ожидает</span>
+                                                        {% elif appointment.status == 'completed' %}
+                                                            <span class="badge bg-success">Завершен</span>
+                                                        {% else %}
+                                                            <span class="badge bg-danger">Отменен</span>
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-center text-muted my-4">У вас нет предстоящих приёмов.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Прошедшие записи -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-secondary text-white">
+                    <h2 class="h4 mb-0">История приёмов</h2>
+                </div>
+                <div class="card-body">
+                    {% if past_by_date %}
+                        {% for date, date_appointments in past_by_date.items %}
+                            <div class="mb-4">
+                                <h5 class="border-bottom pb-2">{{ date|date:"d.m.Y" }}</h5>
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Время</th>
+                                                <th>Питомец</th>
+                                                <th>Владелец</th>
+                                                <th>Телефон</th>
+                                                <th>Статус</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for appointment in date_appointments %}
+                                                <tr>
+                                                    <td>{{ appointment.time|time:"H:i" }}</td>
+                                                    <td>{{ appointment.pet.name }}</td>
+                                                    <td>{{ appointment.pet.owner_name }}</td>
+                                                    <td>{{ appointment.pet.contact_phone }}</td>
+                                                    <td>
+                                                        {% if appointment.status == 'pending' %}
+                                                            <span class="badge bg-warning">Ожидает</span>
+                                                        {% elif appointment.status == 'completed' %}
+                                                            <span class="badge bg-success">Завершен</span>
+                                                        {% else %}
+                                                            <span class="badge bg-danger">Отменен</span>
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-center text-muted my-4">У вас пока нет завершённых приёмов.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
