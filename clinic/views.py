@@ -114,46 +114,55 @@ def booking(request):
     if request.method == 'POST':
         form = AppointmentForm(request.user, request.POST)
         if form.is_valid():
-            # Сохраняем данные записи
             appointment = form.save(commit=False)
             appointment.pet = form.cleaned_data['pet']
             appointment.vet = form.cleaned_data['vet']
             appointment.save()
 
-            # Получаем email пользователя и детали записи
-            user_email = request.user.email  # Извлекаем email текущего пользователя
-            appointment_details = 'Ваши детали записи'  # Примерные данные для письма
+            # Получаем email пользователя и отправляем подтверждение
+            user_email = request.user.email
+            send_appointment_confirmation(user_email, appointment)
 
-            # Отправляем подтверждение записи
-            send_appointment_confirmation(user_email, appointment_details)
-
-            # Логируем успешную запись
             logger.info(f"Создана новая запись: {appointment.date} {appointment.time} - {appointment.pet.name} к врачу {appointment.vet.name}")
             messages.success(request, 'Запись успешно создана!')
-            return redirect('profile')  # Перенаправляем на профиль пользователя
+            return redirect('profile')
         else:
-            # Логируем ошибку валидации формы
             logger.error(f"Ошибка валидации формы: {form.errors}")
     else:
         form = AppointmentForm(request.user)
 
     return render(request, 'clinic/booking.html', {
         'form': form,
-        'vets': Vet.objects.filter(available=True)  # Список доступных врачей
+        'vets': Vet.objects.filter(available=True)
     })
 
-def send_appointment_confirmation(user_email, appointment_details):
-    """Функция отправки письма с подтверждением записи на прием"""
+def send_appointment_confirmation(user_email, appointment):
+    """Отправка письма с подтверждением записи"""
     subject = 'Подтверждение записи на прием'
-    message = f'Здравствуйте! Вы успешно записались на прием. Вот ваши детали: {appointment_details}'
-    from_email = settings.EMAIL_HOST_USER  # Email отправителя
-    recipient_list = [user_email]  # Список получателей (email пользователя)
+    message = f'''
+Здравствуйте!
+
+Вы успешно записались на прием в нашу ветеринарную клинику. Ниже указаны детали вашей записи:
+
+📅 Дата: {appointment.date.strftime("%d.%m.%Y")}
+⏰ Время: {appointment.time.strftime("%H:%M")}
+👩‍⚕️ Врач: {appointment.vet.name}
+🐾 Питомец: {appointment.pet.name}
+
+Если у вас возникнут вопросы или потребуется перенести запись, пожалуйста, свяжитесь с нами заранее.
+
+С уважением,  
+Команда ветеринарной клиники DrHvost
+'''
+    from_email = settings.EMAIL_HOST_USER
+    recipient_list = [user_email]
 
     try:
         send_mail(subject, message, from_email, recipient_list, fail_silently=False)
     except Exception as e:
         logger.error(f"Ошибка при отправке письма: {e}")
         raise
+
 
 @login_required
 def get_available_times(request):
