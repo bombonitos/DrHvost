@@ -332,23 +332,38 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body text-center">
-                <div class="address-block mb-4">
-                    <i class="fas fa-map-marker-alt mb-3"></i>
-                    <h6>Наш адрес:</h6>
-                    <p class="mb-0">г. Астана, ул. Бараева 18.1</p>
-                </div>
-                <div class="contact-buttons">
-                    <a href="https://wa.me/+77002709655" target="_blank" class="btn btn-success btn-lg mb-3 w-100">
-                        <i class="fab fa-whatsapp me-2"></i>WhatsApp
-                    </a>
-                    <a href="https://mail.google.com/mail/?view=cm&to=drhvost.vetclinic@gmail.com&su=Вопрос по ветеринарным услугам&body=Здравствуйте!" target="_blank" class="btn btn-primary btn-lg mb-3 w-100">
-    <i class="fas fa-envelope me-2"></i>Написать на почту
-</a>
-                    <a href="{% url 'booking' %}" class="btn btn-purple btn-lg w-100">
-                        <i class="fas fa-calendar-check me-2"></i>Записаться на приём
-                    </a>
-                </div>
-            </div>
+    <div class="address-block mb-4">
+        <i class="fas fa-map-marker-alt mb-3"></i>
+        <h6>Наш адрес:</h6>
+        <p class="mb-2">г. Астана, ул. Бараева 18.1</p>
+
+        <!-- Карта под адресом -->
+        <div class="map-container" style="width: 100%; height: 200px; border-radius: 10px; overflow: hidden;">
+            <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2923.587174100647!2d71.42627837634191!3d51.1582100717441!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x424580cc30a78ad3%3A0x2c93fd43229b129b!2z0JHQvtC70YzRiNCw0YDQvdCw0Y8g0JHRg9GA0YHQuNCy0LAsIDE4LCDQkNC60YDQsNGI0L3QuNC5LCDQkNC60YDQsNGI0L3QuNC5INCa0LDQu9Cw0YHRgtGA0LDRgdGC0LLQtdC90YI!5e0!3m2!1sru!2skz!4v1715371696052!5m2!1sru!2skz"
+                width="100%"
+                height="100%"
+                style="border:0;"
+                allowfullscreen=""
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"
+            ></iframe>
+        </div>
+    </div>
+
+    <div class="contact-buttons">
+        <a href="https://wa.me/+77002709655" target="_blank" class="btn btn-success btn-lg mb-3 w-100">
+            <i class="fab fa-whatsapp me-2"></i>WhatsApp
+        </a>
+        <a href="https://mail.google.com/mail/?view=cm&to=drhvost.vetclinic@gmail.com&su=Вопрос по ветеринарным услугам&body=Здравствуйте!" target="_blank" class="btn btn-primary btn-lg mb-3 w-100">
+            <i class="fas fa-envelope me-2"></i>Написать на почту
+        </a>
+        <a href="{% url 'booking' %}" class="btn btn-purple btn-lg w-100">
+            <i class="fas fa-calendar-check me-2"></i>Записаться на приём
+        </a>
+    </div>
+</div>
+
         </div>
     </div>
 </div>
@@ -731,12 +746,12 @@
     }
 
     .modal-body {
-        padding: 2rem;
+        padding: 1rem;
     }
 
     .address-block {
         background: #f8fafc;
-        padding: 2rem;
+        padding: 1rem;
         border-radius: 12px;
     }
 

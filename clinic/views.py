@@ -119,6 +119,22 @@ def booking(request):
             appointment.vet = form.cleaned_data['vet']
             appointment.save()
 
+
+            from datetime import datetime, timedelta
+            from django.utils.timezone import make_aware
+            from clinic.tasks import send_appointment_reminder
+
+            # дата и время приема
+            appointment_datetime = datetime.combine(appointment.date, appointment.time)
+            reminder_time = make_aware(appointment_datetime - timedelta(days=1))  # за 24 часа до
+
+            # планируем задачу
+            send_appointment_reminder.apply_async(
+                args=[appointment.id],
+                eta=reminder_time
+            )
+
+
             # Получаем email пользователя и отправляем подтверждение
             user_email = request.user.email
             send_appointment_confirmation(user_email, appointment)
