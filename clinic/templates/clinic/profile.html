@@ -79,6 +79,19 @@
                                             <p><i class="fas fa-user-md"></i> {{ appointment.vet.name }}</p>
                                             <p><i class="fas fa-paw"></i> {{ appointment.pet.name }}</p>
                                             <p class="description">{{ appointment.description }}</p>
+                                            {% if appointment.status == 'pending' %}
+                                            <span class="badge" style="background-color: #FFA94D !important; color: white;">Ожидает</span>
+                                            <form method="post" action="{% url 'cancel_appointment' appointment.id %}" class="d-inline float-end">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-sm" style="background-color: #FF6B6B !important; color: white;" onclick="return confirm('Вы уверены, что хотите отменить запись?')">
+                                                    Отменить запись
+                                                </button>
+                                            </form>
+                                            {% elif appointment.status == 'cancelled' %}
+                                            <span class="badge" style="background-color: #FF6B6B !important; color: white;">Отменено</span>
+                                            {% elif appointment.status == 'completed' %}
+                                            <span class="badge" style="background-color: #51CF66 !important; color: white;">Завершено</span>
+                                            {% endif %}
                                         </div>
                                     </div>
                                 {% endfor %}
@@ -116,6 +129,9 @@
                                             <p><i class="fas fa-user-md"></i> {{ appointment.vet.name }}</p>
                                             <p><i class="fas fa-paw"></i> {{ appointment.pet.name }}</p>
                                             <p class="description">{{ appointment.description }}</p>
+                                            {% if appointment.status == 'completed' %}
+                                            <span class="badge bg-success">Завершено</span>
+                                            {% endif %}
                                         </div>
                                     </div>
                                 {% endfor %}

@@ -17,5 +17,10 @@ urlpatterns = [
     path('logout/', views.logout_view, name='logout'),
     path('profile/edit-pet/<int:pet_id>/', views.edit_pet, name='edit_pet'),
     path('profile/delete-pet/<int:pet_id>/', views.delete_pet, name='delete_pet'),
-
+    path('appointments/create/', views.create_appointment, name='create_appointment'),
+    path('appointments/<int:appointment_id>/cancel/', views.cancel_appointment, name='cancel_appointment'),
+    path('blog/', views.blog_list, name='blog_list'),
+    path('blog/create/', views.blog_create, name='blog_create'),
+    path('blog/<int:post_id>/', views.blog_detail, name='blog_detail'),
+    path('blog/<int:post_id>/edit/', views.blog_edit, name='blog_edit'),
 ]

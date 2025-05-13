@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="blog-edit-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="blog-edit-card">
+                    <h1 class="text-center mb-4">Редактирование статьи</h1>
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="{{ form.title.id_for_label }}" class="form-label">Заголовок</label>
+                            {{ form.title }}
+                        </div>
+                        <div class="mb-3">
+                            <label for="{{ form.content.id_for_label }}" class="form-label">Содержание</label>
+                            {{ form.content }}
+                        </div>
+                        <div class="mb-3">
+                            <label for="{{ form.image.id_for_label }}" class="form-label">Изображение</label>
+                            {{ form.image }}
+                            {% if post.image %}
+                            <div class="current-image mt-2">
+                                <p>Текущее изображение:</p>
+                                <img src="{{ post.image.url }}" alt="Текущее изображение" class="img-thumbnail" style="max-height: 200px;">
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Сохранить изменения
+                            </button>
+                            <a href="{% url 'blog_detail' post.id %}" class="btn btn-outline-secondary ms-2">
+                                <i class="fas fa-times"></i> Отмена
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .blog-edit-section {
+        padding: 4rem 0;
+        background-color: #f8f9fa;
+    }
+
+    .blog-edit-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+    }
+
+    .form-label {
+        font-weight: 500;
+        color: #2d3748;
+    }
+
+    .form-control {
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+        padding: 0.75rem;
+    }
+
+    .form-control:focus {
+        border-color: #4169E1;
+        box-shadow: 0 0 0 0.2rem rgba(65, 105, 225, 0.25);
+    }
+
+    textarea.form-control {
+        min-height: 200px;
+    }
+
+    .current-image {
+        background: #f8f9fa;
+        padding: 1rem;
+        border-radius: 8px;
+    }
+
+    .current-image p {
+        margin-bottom: 0.5rem;
+        color: #718096;
+    }
+
+    .btn-primary {
+        background-color: #4169E1;
+        border: none;
+        padding: 0.8rem 2rem;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background-color: #2850c8;
+        transform: translateY(-2px);
+    }
+
+    .btn-outline-secondary {
+        border-color: #e2e8f0;
+        color: #4a5568;
+        padding: 0.8rem 2rem;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+    }
+
+    .btn-outline-secondary:hover {
+        background-color: #e2e8f0;
+        color: #2d3748;
+        transform: translateY(-2px);
+    }
+
+    .btn i {
+        margin-right: 0.5rem;
+    }
+</style>
+{% endblock %} 

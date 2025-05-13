@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="card-title mb-4">Отмена записи</h2>
+                    <p>Вы уверены, что хотите отменить запись на прием?</p>
+                    <p><strong>Дата:</strong> {{ appointment.date }}</p>
+                    <p><strong>Время:</strong> {{ appointment.time }}</p>
+                    <p><strong>Врач:</strong> {{ appointment.vet.name }}</p>
+                    <p><strong>Питомец:</strong> {{ appointment.pet.name }}</p>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">Отменить запись</button>
+                        <a href="{% url 'profile' %}" class="btn btn-secondary">Вернуться назад</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

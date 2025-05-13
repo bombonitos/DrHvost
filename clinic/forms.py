@@ -1,7 +1,7 @@
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
 from django import forms
-from .models import Pet, Appointment, Vet
+from .models import Pet, Appointment, Vet, BlogPost
 from datetime import date, time
 
 class RegisterForm(UserCreationForm):
@@ -76,3 +76,13 @@ class AppointmentForm(forms.ModelForm):
 class VetLoginForm(AuthenticationForm):
     username = forms.CharField(label='Логин', widget=forms.TextInput(attrs={'class': 'form-control'}))
     password = forms.CharField(label='Пароль', widget=forms.PasswordInput(attrs={'class': 'form-control'}))
+
+class BlogPostForm(forms.ModelForm):
+    class Meta:
+        model = BlogPost
+        fields = ['title', 'content', 'image']
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Введите заголовок статьи'}),
+            'content': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Введите содержание статьи', 'rows': 10}),
+            'image': forms.FileInput(attrs={'class': 'form-control'}),
+        }

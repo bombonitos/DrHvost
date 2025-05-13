@@ -1,0 +1,205 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="blog-section">
+    <div class="container">
+        <div class="blog-header text-center mb-5">
+            <h1 class="display-4">Блог ветеринарной клиники</h1>
+            <p class="lead text-muted">Полезные статьи и советы от наших специалистов</p>
+        </div>
+        
+        {% if user.vet %}
+        <div class="row mb-4">
+            <div class="col-12 text-end">
+                <a href="{% url 'blog_create' %}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-plus"></i> Добавить статью
+                </a>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="row">
+            {% for post in posts %}
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="blog-card">
+                    <div class="blog-image">
+                        <img src="{{ post.image.url }}" alt="{{ post.title }}" class="img-fluid">
+                        <div class="blog-date">
+                            <span class="day">{{ post.created_at|date:"d" }}</span>
+                            <span class="month">{{ post.created_at|date:"M" }}</span>
+                        </div>
+                    </div>
+                    <div class="blog-content">
+                        <div class="blog-meta">
+                            <span class="author">
+                                <i class="fas fa-user-md"></i> {{ post.author.name }}
+                            </span>
+                        </div>
+                        <h3 class="blog-title">
+                            <a href="{% url 'blog_detail' post.id %}">{{ post.title }}</a>
+                        </h3>
+                        <a href="{% url 'blog_detail' post.id %}" class="btn btn-outline-primary">
+                            Читать далее <i class="fas fa-arrow-right ms-2"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center">
+                <div class="no-posts">
+                    <i class="fas fa-newspaper fa-3x mb-3"></i>
+                    <h3>Пока нет статей</h3>
+                    <p class="text-muted">Скоро здесь появятся интересные материалы</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<style>
+    .blog-section {
+        padding: 4rem 0;
+        background-color: #f8f9fa;
+    }
+
+    .blog-header {
+        margin-bottom: 3rem;
+    }
+
+    .blog-header h1 {
+        color: #2d3748;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+
+    .blog-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        height: 100%;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+    .blog-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .blog-image {
+        width: 100%;
+        height: 250px;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .blog-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    .blog-card:hover .blog-image img {
+        transform: scale(1.05);
+    }
+
+    .blog-date {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: #4169E1;
+        color: white;
+        padding: 10px;
+        border-radius: 8px;
+        text-align: center;
+        min-width: 60px;
+    }
+
+    .blog-date .day {
+        display: block;
+        font-size: 1.5rem;
+        font-weight: bold;
+        line-height: 1;
+    }
+
+    .blog-date .month {
+        display: block;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+    }
+
+    .blog-content {
+        padding: 2rem;
+    }
+
+    .blog-meta {
+        margin-bottom: 1rem;
+    }
+
+    .blog-meta .author {
+        color: #e83e8c;
+        font-weight: 500;
+    }
+
+    .blog-meta i {
+        margin-right: 0.5rem;
+    }
+
+    .blog-title {
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+        line-height: 1.4;
+    }
+
+    .blog-title a {
+        color: #2d3748;
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+    .blog-title a:hover {
+        color: #4169E1;
+    }
+
+    .btn-outline-primary {
+        color: #4169E1;
+        border-color: #4169E1;
+        padding: 0.5rem 1.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .btn-outline-primary:hover {
+        background-color: #4169E1;
+        color: white;
+        transform: translateX(5px);
+    }
+
+    .no-posts {
+        padding: 3rem;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .no-posts i {
+        color: #4169E1;
+    }
+
+    .btn-primary {
+        background-color: #4169E1;
+        border: none;
+        padding: 0.8rem 2rem;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background-color: #2850c8;
+        transform: translateY(-2px);
+    }
+</style>
+{% endblock %} 

@@ -3,8 +3,8 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import JsonResponse
-from .forms import RegisterForm, PetForm, AppointmentForm
-from .models import Pet, Appointment, Vet
+from .forms import RegisterForm, PetForm, AppointmentForm, BlogPostForm
+from .models import Pet, Appointment, Vet, BlogPost
 from datetime import datetime
 from django.core.mail import send_mail
 from django.conf import settings
@@ -13,8 +13,12 @@ import logging
 logger = logging.getLogger(__name__)
 
 def home(request):
-    vets = Vet.objects.filter(available=True)
-    return render(request, 'clinic/home.html', {'vets': vets})
+    vets = Vet.objects.all()
+    recommended_posts = BlogPost.objects.order_by('-created_at')[:3]  # Получаем 3 последние статьи
+    return render(request, 'clinic/home.html', {
+        'vets': vets,
+        'recommended_posts': recommended_posts
+    })
 
 def about(request):
     return render(request, 'about.html')
@@ -52,26 +56,40 @@ def logout_view(request):
 
 @login_required
 def profile(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
+    
     pets = Pet.objects.filter(owner=request.user)
     appointments = Appointment.objects.filter(pet__owner=request.user).order_by('-date', '-time')
-    now = datetime.now()
-
+    
     upcoming_appointments = []
     past_appointments = []
-
+    now = datetime.now()
+    
     for appointment in appointments:
+        # Пропускаем отмененные записи
+        if appointment.status == 'cancelled':
+            continue
+            
+        # Проверяем, является ли запись предстоящей
         if appointment.date > now.date() or (appointment.date == now.date() and appointment.time > now.time()):
             upcoming_appointments.append(appointment)
         else:
+            # Если запись в прошлом и её статус 'pending', меняем на 'completed'
+            if appointment.status == 'pending':
+                appointment.status = 'completed'
+                appointment.save()
             past_appointments.append(appointment)
-
-    return render(request, 'clinic/profile.html', {
+    
+    context = {
         'pets': pets,
         'upcoming_appointments': upcoming_appointments,
         'past_appointments': past_appointments,
         'vets': Vet.objects.filter(available=True),
         'now': now
-    })
+    }
+    
+    return render(request, 'clinic/profile.html', context)
 
 @login_required
 def add_pet(request):
@@ -118,22 +136,6 @@ def booking(request):
             appointment.pet = form.cleaned_data['pet']
             appointment.vet = form.cleaned_data['vet']
             appointment.save()
-
-
-            from datetime import datetime, timedelta
-            from django.utils.timezone import make_aware
-            from clinic.tasks import send_appointment_reminder
-
-            # дата и время приема
-            appointment_datetime = datetime.combine(appointment.date, appointment.time)
-            reminder_time = make_aware(appointment_datetime - timedelta(days=1))  # за 24 часа до
-
-            # планируем задачу
-            send_appointment_reminder.apply_async(
-                args=[appointment.id],
-                eta=reminder_time
-            )
-
 
             # Получаем email пользователя и отправляем подтверждение
             user_email = request.user.email
@@ -192,9 +194,11 @@ def get_available_times(request):
         vet = Vet.objects.get(id=vet_id)
         appointment_date = datetime.strptime(date_str, '%Y-%m-%d').date()
 
+        # Получаем только активные записи (со статусом pending)
         booked_times = Appointment.objects.filter(
             vet=vet,
-            date=appointment_date
+            date=appointment_date,
+            status='pending'  # Добавляем фильтр по статусу
         ).values_list('time', flat=True)
 
         all_times = Appointment.TIME_CHOICES
@@ -230,6 +234,10 @@ def vet_profile(request):
             if appt.date > now.date() or (appt.date == now.date() and appt.time > now.time()):
                 upcoming.append(appt)
             else:
+                # Если запись в прошлом и её статус 'pending', меняем на 'completed'
+                if appt.status == 'pending':
+                    appt.status = 'completed'
+                    appt.save()
                 past.append(appt)
 
         upcoming_by_date = {}
@@ -264,3 +272,70 @@ def create_appointment(request):
     else:
         form = AppointmentForm()
     return render(request, 'clinic/create_appointment.html', {'form': form})
+
+def blog_list(request):
+    posts = BlogPost.objects.all()
+    return render(request, 'clinic/blog/list.html', {'posts': posts})
+
+def blog_detail(request, post_id):
+    post = get_object_or_404(BlogPost, id=post_id)
+    return render(request, 'clinic/blog/detail.html', {'post': post})
+
+@login_required
+def blog_create(request):
+    if not hasattr(request.user, 'vet'):
+        messages.error(request, 'Только ветеринары могут создавать статьи')
+        return redirect('blog_list')
+    
+    if request.method == 'POST':
+        form = BlogPostForm(request.POST, request.FILES)
+        if form.is_valid():
+            post = form.save(commit=False)
+            post.author = request.user.vet
+            post.save()
+            messages.success(request, 'Статья успешно создана')
+            return redirect('blog_list')
+    else:
+        form = BlogPostForm()
+    
+    return render(request, 'clinic/blog/create.html', {'form': form})
+
+@login_required
+def blog_edit(request, post_id):
+    post = get_object_or_404(BlogPost, id=post_id)
+    
+    # Проверяем, что пользователь является автором статьи
+    if not request.user.vet or request.user.vet != post.author:
+        messages.error(request, 'У вас нет прав для редактирования этой статьи')
+        return redirect('blog_detail', post_id=post.id)
+    
+    if request.method == 'POST':
+        form = BlogPostForm(request.POST, request.FILES, instance=post)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Статья успешно обновлена')
+            return redirect('blog_detail', post_id=post.id)
+    else:
+        form = BlogPostForm(instance=post)
+    
+    return render(request, 'clinic/blog/edit.html', {
+        'form': form,
+        'post': post
+    })
+
+@login_required
+def cancel_appointment(request, appointment_id):
+    appointment = get_object_or_404(Appointment, id=appointment_id)
+    
+    # Проверяем, что пользователь является владельцем питомца
+    if appointment.pet.owner != request.user:
+        messages.error(request, 'У вас нет прав для отмены этой записи')
+        return redirect('profile')
+    
+    if request.method == 'POST':
+        appointment.status = 'cancelled'
+        appointment.save()
+        messages.success(request, 'Запись успешно отменена')
+        return redirect('profile')
+    
+    return render(request, 'clinic/cancel_appointment.html', {'appointment': appointment})

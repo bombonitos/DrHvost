@@ -78,8 +78,31 @@ class Appointment(models.Model):
     ], default='pending')
 
     class Meta:
-        unique_together = ['vet', 'date', 'time']
         ordering = ['date', 'time']
+        constraints = [
+            models.UniqueConstraint(
+                fields=['vet', 'date', 'time'],
+                condition=models.Q(status='pending'),
+                name='unique_active_appointment'
+            )
+        ]
 
     def __str__(self):
         return f"{self.pet.name} - {self.vet} - {self.date} {self.time}"
+
+
+class BlogPost(models.Model):
+    title = models.CharField(max_length=200, verbose_name='Заголовок')
+    content = models.TextField(verbose_name='Содержание')
+    image = models.ImageField(upload_to='blog_images/', verbose_name='Изображение')
+    author = models.ForeignKey(Vet, on_delete=models.CASCADE, related_name='blog_posts', verbose_name='Автор')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
+    updated_at = models.DateTimeField(auto_now=True, verbose_name='Дата обновления')
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = 'Статья блога'
+        verbose_name_plural = 'Статьи блога'
+
+    def __str__(self):
+        return self.title
