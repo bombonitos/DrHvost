@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <!-- Боковое меню -->
+        <div class="col-md-3 mb-4">
+            <div class="list-group" id="profile-tabs" role="tablist">
+                <a class="list-group-item list-group-item-action active" id="tab-info" data-bs-toggle="list" href="#info" role="tab">Личная информация</a>
+                <a class="list-group-item list-group-item-action" id="tab-pets" data-bs-toggle="list" href="#pets" role="tab">Мои питомцы</a>
+                <a class="list-group-item list-group-item-action" id="tab-upcoming" data-bs-toggle="list" href="#upcoming" role="tab">Предстоящие записи</a>
+                <a class="list-group-item list-group-item-action" id="tab-history" data-bs-toggle="list" href="#history" role="tab">История записей</a>
+            </div>
+        </div>
+        <!-- Контент вкладок -->
+        <div class="col-md-9">
+            <div class="tab-content" id="profile-tab-content">
+                <div class="tab-pane fade show active" id="info" role="tabpanel">
+                    <!-- Здесь будет личная информация -->
+                </div>
+                <div class="tab-pane fade" id="pets" role="tabpanel">
+                    <!-- Здесь будут питомцы -->
+                </div>
+                <div class="tab-pane fade" id="upcoming" role="tabpanel">
+                    <!-- Здесь будут предстоящие записи -->
+                </div>
+                <div class="tab-pane fade" id="history" role="tabpanel">
+                    <!-- Здесь будет история записей -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// AJAX-подгрузка содержимого вкладок
+function loadTabContent(tab, url) {
+    fetch(url)
+        .then(response => response.text())
+        .then(html => {
+            document.getElementById(tab).innerHTML = html;
+        });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Загрузка содержимого по умолчанию
+    loadTabContent('info', '{% url "profile_info_tab" %}');
+    // Навешиваем обработчики на вкладки
+    document.getElementById('tab-info').addEventListener('click', function() {
+        loadTabContent('info', '{% url "profile_info_tab" %}');
+    });
+    document.getElementById('tab-pets').addEventListener('click', function() {
+        loadTabContent('pets', '{% url "profile_pets_tab" %}');
+    });
+    document.getElementById('tab-upcoming').addEventListener('click', function() {
+        loadTabContent('upcoming', '{% url "profile_upcoming_tab" %}');
+    });
+    document.getElementById('tab-history').addEventListener('click', function() {
+        loadTabContent('history', '{% url "profile_history_tab" %}');
+    });
+});
+</script>
+
+<style>
+body {
+    background: #f4f6fb;
+}
+
+.profile-dashboard-card, .tab-pane .card, .list-group-item {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(60, 72, 88, 0.07);
+    border: none;
+    margin-bottom: 2rem;
+    padding: 1.5rem 2rem;
+    transition: box-shadow 0.2s;
+    position: relative;
+}
+.profile-dashboard-card:not(:last-child)::after,
+.tab-pane .card:not(:last-child)::after {
+    content: '';
+    display: block;
+    position: absolute;
+    left: 2rem;
+    right: 2rem;
+    bottom: -1rem;
+    height: 1px;
+    background: #e4e9f2;
+    opacity: 0.7;
+}
+
+.tab-content .card-header {
+    background: transparent;
+    border-bottom: 1px solid #e4e9f2;
+    font-weight: 600;
+    font-size: 1.2rem;
+    color: #4169E1;
+    margin-bottom: 1rem;
+}
+
+.tab-content h4, .tab-content h5 {
+    color: #2d3748;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #e4e9f2;
+    padding-bottom: 0.5rem;
+}
+
+.tab-content .btn, .list-group-item .btn {
+    border-radius: 8px;
+    font-weight: 500;
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+}
+.tab-content .btn-primary {
+    background: #4169E1;
+    border: none;
+}
+.tab-content .btn-primary:hover {
+    background: #2850c8;
+}
+.tab-content .btn-outline-secondary {
+    border-color: #4169E1;
+    color: #4169E1;
+}
+.tab-content .btn-outline-secondary:hover {
+    background: #4169E1;
+    color: #fff;
+}
+.tab-content .btn-outline-danger {
+    border-color: #e53e3e;
+    color: #e53e3e;
+}
+.tab-content .btn-outline-danger:hover {
+    background: #e53e3e;
+    color: #fff;
+}
+
+.list-group-item {
+    border: none;
+    margin-bottom: 1.2rem;
+    padding: 1.2rem 1.5rem;
+    border-bottom: 1px solid #e4e9f2;
+}
+.list-group-item:last-child {
+    border-bottom: none;
+}
+
+.alert-info {
+    background: #e8f0fe;
+    color: #4169E1;
+    border: none;
+    border-radius: 12px;
+    font-weight: 500;
+}
+
+@media (max-width: 768px) {
+    .profile-dashboard-card, .tab-pane .card, .list-group-item {
+        padding: 1rem;
+    }
+    .tab-content .card-header {
+        font-size: 1rem;
+    }
+}
+</style>
+{% endblock %} 

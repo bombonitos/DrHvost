@@ -1,15 +1,17 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import login, logout
+from django.contrib.auth import login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import JsonResponse
 from .forms import RegisterForm, PetForm, AppointmentForm, BlogPostForm
-from .models import Pet, Appointment, Vet, BlogPost
+from .models import Pet, Appointment, Vet, BlogPost, UserProfile
 from datetime import datetime
 from django.core.mail import send_mail
 from django.conf import settings
 import logging
 from django.template.loader import render_to_string
+from django.views.decorators.http import require_GET, require_POST
+from django.contrib.auth.forms import PasswordChangeForm
 
 logger = logging.getLogger(__name__)
 
@@ -372,3 +374,55 @@ def cancel_appointment(request, appointment_id):
         return redirect('profile')
     
     return render(request, 'clinic/cancel_appointment.html', {'appointment': appointment})
+
+@login_required
+@require_GET
+def profile_info_tab(request):
+    return render(request, 'clinic/profile_tab_info.html', {})
+
+@login_required
+@require_GET
+def profile_pets_tab(request):
+    pets = request.user.pets.all()
+    return render(request, 'clinic/profile_tab_pets.html', {'pets': pets})
+
+@login_required
+@require_GET
+def profile_upcoming_tab(request):
+    from datetime import datetime
+    now = datetime.now()
+    appointments = request.user.pets.all().values_list('appointments', flat=True)
+    upcoming_appointments = []
+    for pet in request.user.pets.all():
+        for appointment in pet.appointments.filter(status__in=['pending', 'completed']).order_by('date', 'time'):
+            if appointment.status == 'pending' and (appointment.date > now.date() or (appointment.date == now.date() and appointment.time > now.time())):
+                upcoming_appointments.append(appointment)
+    return render(request, 'clinic/profile_tab_upcoming.html', {'upcoming_appointments': upcoming_appointments})
+
+@login_required
+@require_GET
+def profile_history_tab(request):
+    from datetime import datetime
+    now = datetime.now()
+    past_appointments = []
+    for pet in request.user.pets.all():
+        for appointment in pet.appointments.filter(status__in=['completed', 'cancelled']).order_by('-date', '-time'):
+            if appointment.status in ['completed', 'cancelled'] and (appointment.date < now.date() or (appointment.date == now.date() and appointment.time <= now.time())):
+                past_appointments.append(appointment)
+    return render(request, 'clinic/profile_tab_history.html', {'past_appointments': past_appointments})
+
+@login_required
+def profile_dashboard(request):
+    return render(request, 'clinic/profile_dashboard.html')
+
+@login_required
+@require_POST
+def profile_change_password(request):
+    form = PasswordChangeForm(user=request.user, data=request.POST)
+    if form.is_valid():
+        user = form.save()
+        update_session_auth_hash(request, user)
+        messages.success(request, 'Пароль успешно изменён.')
+    else:
+        messages.error(request, 'Ошибка при смене пароля. Проверьте правильность введённых данных.')
+    return redirect('profile_dashboard')

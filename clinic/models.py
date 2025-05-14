@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
 from datetime import datetime, time
+from django.dispatch import receiver
+from django.db.models.signals import post_save
 
 
 class Vet(models.Model):
@@ -106,3 +108,23 @@ class BlogPost(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+
+    def __str__(self):
+        return f"Профиль {self.user.username}"
+
+
+# Автоматическое создание профиля при создании пользователя
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        UserProfile.objects.create(user=instance)
+
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+    profile = getattr(instance, 'profile', None)
+    if profile:
+        instance.profile.save()
