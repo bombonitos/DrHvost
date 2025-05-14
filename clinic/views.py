@@ -9,6 +9,7 @@ from datetime import datetime
 from django.core.mail import send_mail
 from django.conf import settings
 import logging
+from django.template.loader import render_to_string
 
 logger = logging.getLogger(__name__)
 
@@ -155,7 +156,10 @@ def booking(request):
     })
 
 def send_appointment_confirmation(user_email, appointment):
-    """Отправка письма с подтверждением записи"""
+    """Отправка писем с подтверждением записи пациенту и врачу"""
+    logger.info(f"Начало отправки писем для записи {appointment.id}")
+    
+    # Отправка письма пациенту
     subject = 'Подтверждение записи на прием'
     message = f'''
 Здравствуйте!
@@ -176,11 +180,36 @@ def send_appointment_confirmation(user_email, appointment):
     recipient_list = [user_email]
 
     try:
+        logger.info(f"Отправка письма пациенту на адрес {user_email}")
         send_mail(subject, message, from_email, recipient_list, fail_silently=False)
+        logger.info("Письмо пациенту успешно отправлено")
     except Exception as e:
-        logger.error(f"Ошибка при отправке письма: {e}")
-        raise
+        logger.error(f"Ошибка при отправке письма пациенту: {e}")
 
+    # Отправка письма врачу
+    if appointment.vet.email:
+        logger.info(f"Подготовка письма для врача {appointment.vet.name} на адрес {appointment.vet.email}")
+        vet_subject = 'Новая запись на приём'
+        vet_message = render_to_string('clinic/email/vet_appointment_notification.html', {
+            'appointment': appointment
+        })
+        vet_recipient_list = [appointment.vet.email]
+
+        try:
+            logger.info(f"Отправка письма врачу на адрес {appointment.vet.email}")
+            send_mail(
+                vet_subject,
+                '',
+                from_email,
+                vet_recipient_list,
+                html_message=vet_message,
+                fail_silently=False
+            )
+            logger.info("Письмо врачу успешно отправлено")
+        except Exception as e:
+            logger.error(f"Ошибка при отправке письма врачу: {e}")
+    else:
+        logger.warning(f"У врача {appointment.vet.name} не указан email адрес")
 
 @login_required
 def get_available_times(request):

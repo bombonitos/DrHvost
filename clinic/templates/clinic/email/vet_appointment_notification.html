@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #4169E1;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 5px 5px 0 0;
+        }
+        .content {
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 0 0 5px 5px;
+        }
+        .details {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: white;
+            border-radius: 5px;
+            border-left: 4px solid #4169E1;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>Новая запись на приём</h2>
+        </div>
+        <div class="content">
+            <p>Здравствуйте, {{ appointment.vet.name }}!</p>
+            <p>У вас появилась новая запись на приём.</p>
+            
+            <div class="details">
+                <p><strong>Дата:</strong> {{ appointment.date|date:"d.m.Y" }}</p>
+                <p><strong>Время:</strong> {{ appointment.time|time:"H:i" }}</p>
+                <p><strong>Пациент:</strong> {{ appointment.pet.name }}</p>
+                <p><strong>Вид животного:</strong> {{ appointment.pet.get_species_display }}</p>
+                <p><strong>Владелец:</strong> {{ appointment.pet.owner_name }}</p>
+                <p><strong>Контактный телефон:</strong> {{ appointment.pet.contact_phone }}</p>
+                {% if appointment.description %}
+                <p><strong>Описание проблемы:</strong> {{ appointment.description }}</p>
+                {% endif %}
+            </div>
+
+            <p>Пожалуйста, подтвердите запись в вашем личном кабинете.</p>
+        </div>
+        <div class="footer">
+            <p>С уважением,<br>Команда ветеринарной клиники DrHvost</p>
+        </div>
+    </div>
+</body>
+</html> 
