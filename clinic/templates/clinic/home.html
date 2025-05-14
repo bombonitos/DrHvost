@@ -44,6 +44,11 @@
                             <li><i class="fas fa-check text-success me-2"></i>Индивидуальный подход</li>
                             <li><i class="fas fa-check text-success me-2"></i>Комфортные условия</li>
                         </ul>
+                        <div class="text-center mt-4">
+                            <a href="{% url 'about' %}" class="btn btn-primary btn-lg">
+                                Читать подробнее <i class="fas fa-arrow-right ms-2"></i>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -81,76 +86,92 @@
         <h2 class="text-center mb-5">Наши услуги</h2>
         <div class="row g-4">
             <div class="col-md-3">
-                <div class="service-card service-general">
-                    <div class="service-icon">
-                        <i class="fas fa-stethoscope"></i>
+                <a href="{% url 'blog_detail' 7 %}" class="text-decoration-none">
+                    <div class="service-card service-general">
+                        <div class="service-icon">
+                            <i class="fas fa-stethoscope"></i>
+                        </div>
+                        <h4>Общий осмотр</h4>
+                        <p>Комплексное обследование вашего питомца</p>
                     </div>
-                    <h4>Общий осмотр</h4>
-                    <p>Комплексное обследование вашего питомца</p>
-                </div>
+                </a>
             </div>
             <div class="col-md-3">
-                <div class="service-card service-vaccination">
-                    <div class="service-icon">
-                        <i class="fas fa-syringe"></i>
+                <a href="{% url 'blog_detail' 8 %}" class="text-decoration-none">
+                    <div class="service-card service-vaccination">
+                        <div class="service-icon">
+                            <i class="fas fa-syringe"></i>
+                        </div>
+                        <h4>Вакцинация</h4>
+                        <p>Защита от опасных заболеваний</p>
                     </div>
-                    <h4>Вакцинация</h4>
-                    <p>Защита от опасных заболеваний</p>
-                </div>
+                </a>
             </div>
             <div class="col-md-3">
-                <div class="service-card service-diagnostics">
-                    <div class="service-icon">
-                        <i class="fas fa-microscope"></i>
+                <a href="{% url 'blog_detail' 9 %}" class="text-decoration-none">
+                    <div class="service-card service-diagnostics">
+                        <div class="service-icon">
+                            <i class="fas fa-microscope"></i>
+                        </div>
+                        <h4>Диагностика</h4>
+                        <p>Точная постановка диагноза</p>
                     </div>
-                    <h4>Диагностика</h4>
-                    <p>Точная постановка диагноза</p>
-                </div>
+                </a>
             </div>
             <div class="col-md-3">
-                <div class="service-card service-treatment">
-                    <div class="service-icon">
-                        <i class="fas fa-pills"></i>
+                <a href="{% url 'blog_detail' 10 %}" class="text-decoration-none">
+                    <div class="service-card service-dermatology">
+                        <div class="service-icon">
+                            <i class="fas fa-allergies"></i>
+                        </div>
+                        <h4>Дерматология</h4>
+                        <p>Лечение кожных заболеваний</p>
                     </div>
-                    <h4>Лечение</h4>
-                    <p>Эффективная терапия заболеваний</p>
-                </div>
+                </a>
             </div>
             <div class="col-md-3">
-                <div class="service-card service-surgery">
-                    <div class="service-icon">
-                        <i class="fas fa-user-md"></i>
+                <a href="{% url 'blog_detail' 11 %}" class="text-decoration-none">
+                    <div class="service-card service-surgery">
+                        <div class="service-icon">
+                            <i class="fas fa-user-md"></i>
+                        </div>
+                        <h4>Хирургия</h4>
+                        <p>Современные хирургические операции</p>
                     </div>
-                    <h4>Хирургия</h4>
-                    <p>Современные хирургические операции</p>
-                </div>
+                </a>
             </div>
             <div class="col-md-3">
-                <div class="service-card service-dental">
-                    <div class="service-icon">
-                        <i class="fas fa-tooth"></i>
+                <a href="{% url 'blog_detail' 12 %}" class="text-decoration-none">
+                    <div class="service-card service-dental">
+                        <div class="service-icon">
+                            <i class="fas fa-tooth"></i>
+                        </div>
+                        <h4>Стоматология</h4>
+                        <p>Уход за зубами вашего питомца</p>
                     </div>
-                    <h4>Стоматология</h4>
-                    <p>Уход за зубами вашего питомца</p>
-                </div>
+                </a>
             </div>
             <div class="col-md-3">
-                <div class="service-card service-cardiology">
-                    <div class="service-icon">
-                        <i class="fas fa-heartbeat"></i>
+                <a href="{% url 'blog_detail' 13 %}" class="text-decoration-none">
+                    <div class="service-card service-cardiology">
+                        <div class="service-icon">
+                            <i class="fas fa-heartbeat"></i>
+                        </div>
+                        <h4>Кардиология</h4>
+                        <p>Диагностика и лечение сердечных заболеваний</p>
                     </div>
-                    <h4>Кардиология</h4>
-                    <p>Диагностика и лечение сердечных заболеваний</p>
-                </div>
+                </a>
             </div>
             <div class="col-md-3">
-                <div class="service-card service-neurology">
-                    <div class="service-icon">
-                        <i class="fas fa-brain"></i>
+                <a href="{% url 'blog_detail' 14 %}" class="text-decoration-none">
+                    <div class="service-card service-neurology">
+                        <div class="service-icon">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <h4>Неврология</h4>
+                        <p>Лечение неврологических расстройств</p>
                     </div>
-                    <h4>Неврология</h4>
-                    <p>Лечение неврологических расстройств</p>
-                </div>
+                </a>
             </div>
         </div>
     </div>
@@ -394,7 +415,7 @@
 
 <style>
     .hero-section {
-        background: linear-gradient(135deg, #e8f0fe 0%, rgb(0, 115, 255) 100%);
+        background: linear-gradient(135deg,rgb(187, 220, 255) 0%, rgb(0, 89, 255) 100%);
         height: 85vh;
         position: relative;
         overflow: hidden;
@@ -406,7 +427,7 @@
         display: flex;
         align-items: center;
         margin-top: -80px;
-        padding-top: 80px;
+        padding-top: 90px;
     }
 
     .background-image {
@@ -429,7 +450,7 @@
 
     .dog-image {
         width: 100%;
-        height: 80vh;
+        height: 85vh;
         object-fit: cover;
         object-position: right bottom;
         filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.1));
@@ -454,7 +475,7 @@
     }
 
     .hero-section .display-4 {
-        color: #4169E1;
+        color: #FFB300;
         text-shadow: 0 2px 4px rgba(255, 255, 255, 0.5);
         font-size: 3.5rem;
         font-weight: 800;
@@ -850,6 +871,7 @@
         transition: all 0.3s ease;
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
         border: 1px solid rgba(0, 0, 0, 0.05);
+        cursor: pointer;
     }
 
     .service-card:hover {
@@ -904,13 +926,13 @@
         background: #4DABF7;
     }
 
-    .service-treatment .service-icon {
+    .service-dermatology .service-icon {
         background: #E5FFE5;
     }
-    .service-treatment .service-icon i {
+    .service-dermatology .service-icon i {
         color: #51CF66;
     }
-    .service-treatment:hover .service-icon {
+    .service-dermatology:hover .service-icon {
         background: #51CF66;
     }
 

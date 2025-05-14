@@ -21,7 +21,7 @@ def home(request):
     })
 
 def about(request):
-    return render(request, 'about.html')
+    return render(request, 'clinic/about.html')
 
 def doctors(request):
     vets = Vet.objects.filter(available=True)
@@ -274,7 +274,11 @@ def create_appointment(request):
     return render(request, 'clinic/create_appointment.html', {'form': form})
 
 def blog_list(request):
-    posts = BlogPost.objects.all()
+    search_query = request.GET.get('search', '')
+    if search_query:
+        posts = BlogPost.objects.filter(title__icontains=search_query)
+    else:
+        posts = BlogPost.objects.all()
     return render(request, 'clinic/blog/list.html', {'posts': posts})
 
 def blog_detail(request, post_id):

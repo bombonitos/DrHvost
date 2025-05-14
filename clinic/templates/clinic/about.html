@@ -1,0 +1,256 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="about-section">
+    <div class="container">
+        <!-- Заголовок -->
+        <div class="about-header text-center mb-5">
+            <h1 class="display-4">О нашей клинике</h1>
+            <p class="lead text-muted">Забота о здоровье ваших питомцев - наша главная миссия</p>
+        </div>
+
+        <!-- Основная информация -->
+        <div class="row mb-5">
+            <div class="col-lg-6">
+                <div class="about-image">
+                    <img src="{% static 'images/clinic.jpg' %}" alt="Наша клиника" class="img-fluid rounded shadow">
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="about-content">
+                    <h2 class="mb-4">Добро пожаловать в DrHvost</h2>
+                    <p class="lead mb-4">Мы - современная ветеринарная клиника, где каждый питомец получает индивидуальный подход и профессиональную заботу.</p>
+                    <p>Наша клиника была основана с целью предоставления высококачественных ветеринарных услуг с использованием передовых технологий и методов лечения. Мы гордимся нашей командой опытных специалистов, которые постоянно совершенствуют свои навыки и следят за последними достижениями в области ветеринарии.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Наши преимущества -->
+        <div class="features-section mb-5">
+            <h2 class="text-center mb-5">Почему выбирают нас</h2>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-microscope"></i>
+                        </div>
+                        <h3>Современное оборудование</h3>
+                        <p>Мы используем новейшее диагностическое и лечебное оборудование для точной постановки диагноза и эффективного лечения.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-user-md"></i>
+                        </div>
+                        <h3>Опытные специалисты</h3>
+                        <p>Наша команда состоит из квалифицированных ветеринаров с многолетним опытом работы в различных областях ветеринарии.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <h3>Индивидуальный подход</h3>
+                        <p>Мы относимся к каждому питомцу как к члену семьи, обеспечивая персональный подход и внимание к деталям.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Наши ценности -->
+        <div class="values-section mb-5">
+            <h2 class="text-center mb-5">Наши ценности</h2>
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="value-card">
+                        <h3><i class="fas fa-check-circle text-success me-2"></i>Профессионализм</h3>
+                        <p>Мы постоянно совершенствуем свои навыки и знания, чтобы предоставлять лучшие услуги в области ветеринарии.</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="value-card">
+                        <h3><i class="fas fa-heart text-danger me-2"></i>Забота</h3>
+                        <p>Мы относимся к каждому питомцу с любовью и вниманием, обеспечивая комфортные условия лечения.</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="value-card">
+                        <h3><i class="fas fa-handshake text-primary me-2"></i>Честность</h3>
+                        <p>Мы всегда честны с нашими клиентами, предоставляя полную информацию о состоянии здоровья питомца.</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="value-card">
+                        <h3><i class="fas fa-clock text-warning me-2"></i>Доступность</h3>
+                        <p>Мы работаем для вас каждый день, обеспечивая своевременную помощь в любое время.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Призыв к действию -->
+        <div class="cta-section text-center">
+            <h2 class="mb-4">Готовы позаботиться о здоровье вашего питомца?</h2>
+            <p class="lead mb-4">Запишитесь на прием прямо сейчас и получите профессиональную консультацию наших специалистов.</p>
+            <a href="{% url 'booking' %}" class="btn btn-primary btn-lg">
+                Записаться на приём <i class="fas fa-arrow-right ms-2"></i>
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+    .about-section {
+        padding: 6rem 0;
+        background-color: #f8f9fa;
+    }
+
+    .about-header {
+        margin-bottom: 4rem;
+    }
+
+    .about-header h1 {
+        color: #2d3748;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+
+    .about-image {
+        position: relative;
+        overflow: hidden;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .about-image img {
+        transition: transform 0.3s ease;
+    }
+
+    .about-image:hover img {
+        transform: scale(1.05);
+    }
+
+    .about-content {
+        padding: 2rem;
+    }
+
+    .about-content h2 {
+        color: #2d3748;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+    }
+
+    .about-content p {
+        color: #4a5568;
+        line-height: 1.8;
+        margin-bottom: 1.5rem;
+    }
+
+    .feature-card {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        height: 100%;
+        transition: transform 0.3s ease;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .feature-icon {
+        width: 70px;
+        height: 70px;
+        background: #e8f0fe;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .feature-icon i {
+        font-size: 2rem;
+        color: #4169E1;
+    }
+
+    .feature-card h3 {
+        color: #2d3748;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .feature-card p {
+        color: #718096;
+        line-height: 1.6;
+    }
+
+    .value-card {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        height: 100%;
+        transition: transform 0.3s ease;
+    }
+
+    .value-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .value-card h3 {
+        color: #2d3748;
+        font-size: 1.3rem;
+        margin-bottom: 1rem;
+    }
+
+    .value-card p {
+        color: #718096;
+        line-height: 1.6;
+    }
+
+    .cta-section {
+        background: white;
+        padding: 4rem 2rem;
+        border-radius: 20px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-top: 4rem;
+    }
+
+    .cta-section h2 {
+        color: #2d3748;
+        font-weight: 700;
+    }
+
+    .btn-primary {
+        background-color: #4169E1;
+        border: none;
+        padding: 1rem 2rem;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background-color: #2850c8;
+        transform: translateY(-2px);
+    }
+
+    @media (max-width: 768px) {
+        .about-section {
+            padding: 3rem 0;
+        }
+
+        .about-content {
+            padding: 1rem;
+        }
+
+        .feature-card, .value-card {
+            margin-bottom: 1.5rem;
+        }
+    }
+</style>
+{% endblock %} 
