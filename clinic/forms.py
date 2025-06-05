@@ -87,7 +87,7 @@ class BlogPostForm(forms.ModelForm):
             'image': forms.FileInput(attrs={'class': 'form-control'}),
         }
 
-class ChangeUsernameForm(forms.ModelForm):
+class ChangeUsernameForm(forms.Form):
     new_username = forms.CharField(
         label='Новый логин',
         widget=forms.TextInput(attrs={'class': 'form-control'})
@@ -97,17 +97,13 @@ class ChangeUsernameForm(forms.ModelForm):
         widget=forms.PasswordInput(attrs={'class': 'form-control'})
     )
 
-    class Meta:
-        model = User
-        fields = []
-
     def clean_new_username(self):
         new_username = self.cleaned_data.get('new_username')
         if User.objects.filter(username=new_username).exists():
             raise forms.ValidationError('Этот логин уже занят')
         return new_username
 
-class ChangeEmailForm(forms.ModelForm):
+class ChangeEmailForm(forms.Form):
     new_email = forms.EmailField(
         label='Новая почта',
         widget=forms.EmailInput(attrs={'class': 'form-control'})
@@ -116,10 +112,6 @@ class ChangeEmailForm(forms.ModelForm):
         label='Текущий пароль',
         widget=forms.PasswordInput(attrs={'class': 'form-control'})
     )
-
-    class Meta:
-        model = User
-        fields = []
 
     def clean_new_email(self):
         new_email = self.cleaned_data.get('new_email')

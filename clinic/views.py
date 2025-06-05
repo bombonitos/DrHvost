@@ -1,9 +1,9 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import login, logout, update_session_auth_hash
+from django.contrib.auth import login, logout, update_session_auth_hash, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import JsonResponse
-from .forms import RegisterForm, PetForm, AppointmentForm, BlogPostForm
+from .forms import RegisterForm, PetForm, AppointmentForm, BlogPostForm, VetLoginForm, ChangeUsernameForm, ChangeEmailForm
 from .models import Pet, Appointment, Vet, BlogPost, UserProfile
 from datetime import datetime
 from django.core.mail import send_mail
@@ -12,6 +12,7 @@ import logging
 from django.template.loader import render_to_string
 from django.views.decorators.http import require_GET, require_POST
 from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth.models import User
 
 logger = logging.getLogger(__name__)
 
@@ -415,13 +416,61 @@ def profile_dashboard(request):
     return render(request, 'clinic/profile_dashboard.html')
 
 @login_required
-@require_POST
 def profile_change_password(request):
-    form = PasswordChangeForm(user=request.user, data=request.POST)
-    if form.is_valid():
-        user = form.save()
-        update_session_auth_hash(request, user)
-        messages.success(request, 'Пароль успешно изменён.')
+    if request.method == 'POST':
+        form = PasswordChangeForm(user=request.user, data=request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)
+            messages.success(request, 'Пароль успешно изменён.')
+            return redirect('profile')
+        else:
+            messages.error(request, 'Ошибка при смене пароля. Проверьте правильность введённых данных.')
     else:
-        messages.error(request, 'Ошибка при смене пароля. Проверьте правильность введённых данных.')
-    return redirect('profile_dashboard')
+        form = PasswordChangeForm(user=request.user)
+    
+    return render(request, 'clinic/change_password.html', {'form': form})
+
+@login_required
+def change_username(request):
+    if request.method == 'POST':
+        form = ChangeUsernameForm(request.POST)
+        if form.is_valid():
+            user = request.user
+            password = form.cleaned_data['password']
+            new_username = form.cleaned_data['new_username']
+            
+            # Проверяем текущий пароль
+            if user.check_password(password):
+                user.username = new_username
+                user.save()
+                messages.success(request, 'Логин успешно изменен')
+                return redirect('profile')
+            else:
+                form.add_error('password', 'Неверный пароль')
+    else:
+        form = ChangeUsernameForm()
+    
+    return render(request, 'clinic/change_username.html', {'form': form})
+
+@login_required
+def change_email(request):
+    if request.method == 'POST':
+        form = ChangeEmailForm(request.POST)
+        if form.is_valid():
+            user = request.user
+            password = form.cleaned_data['password']
+            new_email = form.cleaned_data['new_email']
+            
+            # Проверяем текущий пароль
+            if user.check_password(password):
+                user.email = new_email
+                user.save()
+                messages.success(request, 'Email успешно изменен')
+                return redirect('profile')
+            else:
+                form.add_error('password', 'Неверный пароль')
+    else:
+        form = ChangeEmailForm()
+    
+    return render(request, 'clinic/change_email.html', {'form': form})
