@@ -1,10 +1,7 @@
 from celery import shared_task
-from datetime import timedelta
-from django.utils.timezone import now
 from .models import Appointment
 from django.core.mail import send_mail
 from django.conf import settings
-
 @shared_task
 def send_appointment_reminder(appointment_id):
     try:
@@ -18,7 +15,6 @@ def send_appointment_reminder(appointment_id):
             f"Здравствуйте! Напоминаем, что завтра в {time} "
             f"у вас приём с {vet_name} для питомца {pet_name}."
         )
-
         send_mail(
             'Напоминание о приёме',
             message,

@@ -293,15 +293,14 @@ def vet_profile(request):
 @login_required
 def create_appointment(request):
     if request.method == 'POST':
-        form = AppointmentForm(request.POST)
+        form = AppointmentForm(request.user, request.POST)
         if form.is_valid():
             appointment = form.save(commit=False)
-            appointment.patient = request.user
             appointment.save()
             messages.success(request, 'Вы успешно записались на прием!')
-            return redirect('appointments')
+            return redirect('profile')
     else:
-        form = AppointmentForm()
+        form = AppointmentForm(request.user)
     return render(request, 'clinic/create_appointment.html', {'form': form})
 
 def blog_list(request):

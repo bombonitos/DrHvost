@@ -86,3 +86,43 @@ class BlogPostForm(forms.ModelForm):
             'content': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Введите содержание статьи', 'rows': 10}),
             'image': forms.FileInput(attrs={'class': 'form-control'}),
         }
+
+class ChangeUsernameForm(forms.ModelForm):
+    new_username = forms.CharField(
+        label='Новый логин',
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+    )
+    password = forms.CharField(
+        label='Текущий пароль',
+        widget=forms.PasswordInput(attrs={'class': 'form-control'})
+    )
+
+    class Meta:
+        model = User
+        fields = []
+
+    def clean_new_username(self):
+        new_username = self.cleaned_data.get('new_username')
+        if User.objects.filter(username=new_username).exists():
+            raise forms.ValidationError('Этот логин уже занят')
+        return new_username
+
+class ChangeEmailForm(forms.ModelForm):
+    new_email = forms.EmailField(
+        label='Новая почта',
+        widget=forms.EmailInput(attrs={'class': 'form-control'})
+    )
+    password = forms.CharField(
+        label='Текущий пароль',
+        widget=forms.PasswordInput(attrs={'class': 'form-control'})
+    )
+
+    class Meta:
+        model = User
+        fields = []
+
+    def clean_new_email(self):
+        new_email = self.cleaned_data.get('new_email')
+        if User.objects.filter(email=new_email).exists():
+            raise forms.ValidationError('Эта почта уже используется')
+        return new_email

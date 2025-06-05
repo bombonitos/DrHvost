@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'booking',
     'clinic',
     'django_celery_beat',
-
+    'django_extensions',
 ]
 
 MIDDLEWARE = [
@@ -167,8 +167,8 @@ EMAIL_HOST = 'smtp.yandex.ru'
 EMAIL_PORT = 465
 EMAIL_USE_SSL = True
 EMAIL_HOST_USER = 'bombonitos@yandex.ru'
-EMAIL_HOST_PASSWORD = 'pxjzuyhpnlouqdfe'  # твой пароль
-DEFAULT_FROM_EMAIL = 'bombonitos@yandex.ru'  # если не указано
+EMAIL_HOST_PASSWORD = 'pxjzuyhpnlouqdfe'
+DEFAULT_FROM_EMAIL = 'bombonitos@yandex.ru'
 
 
 

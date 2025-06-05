@@ -1,8 +1,5 @@
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
-from datetime import timedelta
-from django.utils import timezone
-from .models import Appointment
 import logging
 
 logger = logging.getLogger(__name__)
@@ -14,8 +11,7 @@ def send_appointment_confirmation(appointment):
     try:
         subject = "Подтверждение записи в ветеринарную клинику Dr. Хвост"
         from_email = "drhvost.vetclinic@gmail.com"
-        
-        # Получатели — и пользователь, и врач
+
         to = [
             appointment.pet.owner.email,  # email пользователя
             appointment.vet.user.email    # email врача
@@ -35,8 +31,8 @@ def send_appointment_confirmation(appointment):
         msg = EmailMultiAlternatives(subject, text_content, from_email, to)
         msg.attach_alternative(html_content, "text/html")
 
-        msg.send(fail_silently=False)  # Ожидаем ошибок, если что-то пойдет не так
-        logger.info(f"Email sent to {', '.join(to)}")  # Логируем успешную отправку
+        msg.send(fail_silently=False)
+        logger.info(f"Email sent to {', '.join(to)}")
     except Exception as e:
         logger.error(f"Error sending email: {e}")
         raise
