@@ -14,7 +14,7 @@ class RegisterForm(UserCreationForm):
 class PetForm(forms.ModelForm):
     class Meta:
         model = Pet
-        fields = ['name', 'species', 'gender', 'breed', 'age', 'owner_name', 'contact_phone']
+        fields = ['name', 'species', 'gender', 'breed', 'age', 'owner_name', 'contact_phone', 'photo']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control'}),
             'species': forms.Select(attrs={'class': 'form-control'}),
@@ -23,6 +23,7 @@ class PetForm(forms.ModelForm):
             'age': forms.NumberInput(attrs={'class': 'form-control'}),
             'owner_name': forms.TextInput(attrs={'class': 'form-control'}),
             'contact_phone': forms.TextInput(attrs={'class': 'form-control'}),
+            'photo': forms.FileInput(attrs={'class': 'form-control'}),
         }
 
 class AppointmentForm(forms.ModelForm):

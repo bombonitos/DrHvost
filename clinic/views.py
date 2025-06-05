@@ -98,7 +98,7 @@ def profile(request):
 @login_required
 def add_pet(request):
     if request.method == 'POST':
-        form = PetForm(request.POST)
+        form = PetForm(request.POST, request.FILES)
         if form.is_valid():
             pet = form.save(commit=False)
             pet.owner = request.user
@@ -113,7 +113,7 @@ def add_pet(request):
 def edit_pet(request, pet_id):
     pet = get_object_or_404(Pet, id=pet_id, owner=request.user)
     if request.method == 'POST':
-        form = PetForm(request.POST, instance=pet)
+        form = PetForm(request.POST, request.FILES, instance=pet)
         if form.is_valid():
             form.save()
             messages.success(request, 'Информация о питомце обновлена!')

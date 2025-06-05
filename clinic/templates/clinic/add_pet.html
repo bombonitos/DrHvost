@@ -6,39 +6,25 @@
         <div class="col-md-8">
             <div class="card">
                 <div class="card-header">
-                    <h2>Добавить питомца</h2>
+                    <h4 class="mb-0">Добавить питомца</h4>
                 </div>
                 <div class="card-body">
-                    <form method="post">
+                    <form method="post" enctype="multipart/form-data">
                         {% csrf_token %}
-                        <div class="form-group">
-                            <label for="id_name">Имя питомца</label>
-                            {{ form.name }}
-                        </div>
-                        <div class="form-group">
-                            <label for="id_species">Вид животного</label>
-                            {{ form.species }}
-                        </div>
-                        <div class="form-group">
-                            <label for="id_gender">Пол</label>
-                            {{ form.gender }}
-                        </div>
-                        <div class="form-group">
-                            <label for="id_breed">Порода</label>
-                            {{ form.breed }}
-                        </div>
-                        <div class="form-group">
-                            <label for="id_age">Возраст</label>
-                            {{ form.age }}
-                        </div>
-                        <div class="form-group">
-                            <label for="id_owner_name">Имя владельца</label>
-                            {{ form.owner_name }}
-                        </div>
-                        <div class="form-group">
-                            <label for="id_contact_phone">Контактный телефон</label>
-                            {{ form.contact_phone }}
-                        </div>
+                        {% for field in form %}
+                            <div class="mb-3">
+                                <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                                {{ field }}
+                                {% if field.errors %}
+                                    <div class="alert alert-danger mt-1">
+                                        {{ field.errors }}
+                                    </div>
+                                {% endif %}
+                                {% if field.help_text %}
+                                    <div class="form-text">{{ field.help_text }}</div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
                         <div class="d-grid gap-2">
                             <button type="submit" class="btn btn-primary">Добавить питомца</button>
                             <a href="{% url 'profile' %}" class="btn btn-secondary">Отмена</a>

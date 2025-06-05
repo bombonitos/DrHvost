@@ -1,28 +1,43 @@
 {% load static %}
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h4>Мои питомцы</h4>
-    <a href="{% url 'add_pet' %}" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> Добавить питомца</a>
-</div>
-{% if pets %}
-    <div class="row">
-        {% for pet in pets %}
-        <div class="col-md-6 mb-3">
-            <div class="card h-100">
-                <div class="card-body">
-                    <h5 class="card-title">{{ pet.name }}</h5>
-                    <p class="card-text mb-1"><strong>Вид:</strong> {{ pet.get_species_display }}</p>
-                    <p class="card-text mb-1"><strong>Порода:</strong> {{ pet.breed }}</p>
-                    <p class="card-text mb-1"><strong>Возраст:</strong> {{ pet.age }} лет</p>
-                    <p class="card-text mb-1"><strong>Пол:</strong> {{ pet.get_gender_display }}</p>
-                </div>
-                <div class="card-footer d-flex justify-content-end gap-2">
-                    <a href="{% url 'edit_pet' pet.id %}" class="btn btn-outline-secondary btn-sm"><i class="fas fa-edit"></i> Редактировать</a>
-                    <a href="{% url 'delete_pet' pet.id %}" class="btn btn-outline-danger btn-sm"><i class="fas fa-trash"></i> Удалить</a>
+<div class="row">
+    {% for pet in pets %}
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card h-100">
+            {% if pet.photo %}
+                <img src="{{ pet.photo.url }}" class="card-img-top" alt="{{ pet.name }}" style="height: 200px; object-fit: cover;">
+            {% else %}
+                <img src="{% static 'images/default-pet.jpg' %}" class="card-img-top" alt="Default pet image" style="height: 200px; object-fit: cover;">
+            {% endif %}
+            <div class="card-body">
+                <h5 class="card-title">{{ pet.name }}</h5>
+                <p class="card-text">
+                    <strong>Вид:</strong> {{ pet.get_species_display }}<br>
+                    <strong>Порода:</strong> {{ pet.breed }}<br>
+                    <strong>Возраст:</strong> {{ pet.age }} лет<br>
+                    <strong>Пол:</strong> {{ pet.get_gender_display }}
+                </p>
+                <div class="d-flex justify-content-between">
+                    <a href="{% url 'edit_pet' pet.id %}" class="btn btn-sm" style="background-color: #4DABF7; color: white;">
+                        <i class="fas fa-edit"></i> Редактировать
+                    </a>
+                    <a href="{% url 'delete_pet' pet.id %}" class="btn btn-sm" style="background-color: #FF6B6B; color: white;">
+                        <i class="fas fa-trash"></i> Удалить
+                    </a>
                 </div>
             </div>
         </div>
-        {% endfor %}
     </div>
-{% else %}
-    <div class="alert alert-info">У вас пока нет питомцев. <a href="{% url 'add_pet' %}">Добавьте первого питомца</a>.</div>
-{% endif %} 
+    {% empty %}
+    <div class="col-12">
+        <div class="alert alert-info">
+            У вас пока нет добавленных питомцев. <a href="{% url 'add_pet' %}" class="alert-link">Добавить питомца</a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="mt-4">
+    <a href="{% url 'add_pet' %}" class="btn" style="background-color: #37B24D; color: white;">
+        <i class="fas fa-plus"></i> Добавить питомца
+    </a>
+</div> 

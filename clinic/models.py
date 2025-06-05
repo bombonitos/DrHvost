@@ -32,26 +32,35 @@ class Pet(models.Model):
         ('dog', 'Собака'),
         ('cat', 'Кошка'),
         ('bird', 'Птица'),
+        ('rodent', 'Грызун'),
+        ('reptile', 'Рептилия'),
         ('other', 'Другое'),
     ]
 
     GENDER_CHOICES = [
-        ('male', 'Мужской'),
-        ('female', 'Женский'),
+        ('male', 'Самец'),
+        ('female', 'Самка'),
     ]
 
-    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='pets', null=True, blank=True)
-    name = models.CharField(max_length=50)
-    species = models.CharField(max_length=10, choices=SPECIES_CHOICES)
-    gender = models.CharField(max_length=10, choices=GENDER_CHOICES, default='male')
-    breed = models.CharField(max_length=50, blank=True)
-    age = models.PositiveIntegerField()
-    owner_name = models.CharField(max_length=100)
-    contact_phone = models.CharField(max_length=20)
-    vet = models.ForeignKey('Vet', on_delete=models.SET_NULL, null=True, related_name='pets')
+    name = models.CharField(max_length=100, verbose_name='Кличка')
+    species = models.CharField(max_length=20, choices=SPECIES_CHOICES, verbose_name='Вид')
+    gender = models.CharField(max_length=10, choices=GENDER_CHOICES, verbose_name='Пол')
+    breed = models.CharField(max_length=100, verbose_name='Порода')
+    age = models.IntegerField(verbose_name='Возраст')
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='pets', verbose_name='Владелец')
+    owner_name = models.CharField(max_length=100, verbose_name='Имя владельца')
+    contact_phone = models.CharField(max_length=20, verbose_name='Контактный телефон')
+    photo = models.ImageField(upload_to='pets/', null=True, blank=True, verbose_name='Фото питомца')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.name} ({self.species})"
+        return f"{self.name} ({self.get_species_display()})"
+
+    class Meta:
+        verbose_name = 'Питомец'
+        verbose_name_plural = 'Питомцы'
+        ordering = ['-created_at']
 
 
 class Appointment(models.Model):
@@ -68,7 +77,7 @@ class Appointment(models.Model):
     ]
 
     pet = models.ForeignKey(Pet, on_delete=models.CASCADE, related_name='appointments')
-    vet = models.ForeignKey(Vet, on_delete=models.CASCADE, related_name='appointments')
+    vet = models.ForeignKey('Vet', on_delete=models.CASCADE, related_name='appointments')
     date = models.DateField()
     time = models.TimeField(choices=TIME_CHOICES)
     description = models.TextField(max_length=500)
@@ -97,7 +106,7 @@ class BlogPost(models.Model):
     title = models.CharField(max_length=200, verbose_name='Заголовок')
     content = models.TextField(verbose_name='Содержание')
     image = models.ImageField(upload_to='blog_images/', verbose_name='Изображение')
-    author = models.ForeignKey(Vet, on_delete=models.CASCADE, related_name='blog_posts', verbose_name='Автор')
+    author = models.ForeignKey('Vet', on_delete=models.CASCADE, related_name='blog_posts', verbose_name='Автор')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='Дата обновления')
 
