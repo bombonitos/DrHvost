@@ -33,10 +33,13 @@
                                     {% endif %}
                                 </div>
                             {% endfor %}
-                            <button type="submit" class="btn btn-primary w-100">Войти</button>
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary">Войти</button>
+                            </div>
                         </form>
                         <div class="auth-footer">
                             <p>Нет аккаунта? <a href="{% url 'register' %}" class="text-primary">Зарегистрироваться</a></p>
+                            <p><a href="{% url 'password_reset' %}" class="text-primary">Забыли пароль?</a></p>
                         </div>
                     </div>
                 </div>

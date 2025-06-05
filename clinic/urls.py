@@ -29,11 +29,22 @@ urlpatterns = [
     path('profile/tab/upcoming/', views.profile_upcoming_tab, name='profile_upcoming_tab'),
     path('profile/tab/history/', views.profile_history_tab, name='profile_history_tab'),
     path('profile/change-password/', views.profile_change_password, name='profile_change_password'),
-    path('profile/reset-password/', auth_views.PasswordResetView.as_view(template_name='clinic/password_reset_form.html'), name='profile_reset_password'),
-    path('profile/reset-password/done/', auth_views.PasswordResetDoneView.as_view(template_name='clinic/password_reset_done.html'), name='password_reset_done'),
-    path('profile/reset-password/confirm/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(template_name='clinic/password_reset_confirm.html'), name='password_reset_confirm'),
-    path('profile/reset-password/complete/', auth_views.PasswordResetCompleteView.as_view(template_name='clinic/password_reset_complete.html'), name='password_reset_complete'),
+    path('profile/reset-password/', auth_views.PasswordResetView.as_view(
+        template_name='clinic/password_reset_form.html',
+        email_template_name='clinic/password_reset_email.html',
+        subject_template_name='clinic/password_reset_subject.txt'
+    ), name='password_reset'),
+    path('profile/reset-password/done/', auth_views.PasswordResetDoneView.as_view(
+        template_name='clinic/password_reset_done.html'
+    ), name='password_reset_done'),
+    path('profile/reset-password/confirm/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(
+        template_name='clinic/password_reset_confirm.html'
+    ), name='password_reset_confirm'),
+    path('profile/reset-password/complete/', auth_views.PasswordResetCompleteView.as_view(
+        template_name='clinic/password_reset_complete.html'
+    ), name='password_reset_complete'),
     path('profile/change-username/', views.change_username, name='change_username'),
     path('profile/change-email/', views.change_email, name='change_email'),
+    path('test-email/', views.test_email, name='test_email'),
 ]
 

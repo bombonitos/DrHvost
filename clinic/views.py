@@ -474,3 +474,26 @@ def change_email(request):
         form = ChangeEmailForm()
     
     return render(request, 'clinic/change_email.html', {'form': form})
+
+def test_email(request):
+    try:
+        subject = 'Тестовое письмо'
+        message = 'Это тестовое письмо для проверки настроек SMTP.'
+        from_email = settings.EMAIL_HOST_USER
+        recipient_list = ['bombonitos@yandex.ru']
+        
+        logger.info(f"Попытка отправки письма на {recipient_list}")
+        
+        send_mail(
+            subject,
+            message,
+            from_email,
+            recipient_list,
+            fail_silently=False,
+        )
+        
+        logger.info("Письмо успешно отправлено")
+        return JsonResponse({'status': 'success', 'message': 'Письмо отправлено'})
+    except Exception as e:
+        logger.error(f"Ошибка при отправке письма: {str(e)}")
+        return JsonResponse({'status': 'error', 'message': str(e)})

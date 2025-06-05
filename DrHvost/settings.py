@@ -162,29 +162,56 @@ load_dotenv()
 print("EMAIL USER:", os.getenv("EMAIL_HOST_USER"))
 print("EMAIL PASS:", os.getenv("EMAIL_HOST_PASSWORD"))
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+        'file': {
+            'class': 'logging.FileHandler',
+            'filename': 'debug.log',
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'django.request': {
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'django.security': {
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}
+
+# Настройки email
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.yandex.ru'
 EMAIL_PORT = 465
 EMAIL_USE_SSL = True
+EMAIL_USE_TLS = False
 EMAIL_HOST_USER = 'bombonitos@yandex.ru'
 EMAIL_HOST_PASSWORD = 'pxjzuyhpnlouqdfe'
 DEFAULT_FROM_EMAIL = 'bombonitos@yandex.ru'
-
-
-
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'console': {  # Печатает в терминал
-            'class': 'logging.StreamHandler',
-        },
-    },
-    'root': {
-        'handlers': ['console'],
-        'level': 'INFO',  # или DEBUG
-    },
-}
+SERVER_EMAIL = 'bombonitos@yandex.ru'
+EMAIL_TIMEOUT = 10
 
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
 
