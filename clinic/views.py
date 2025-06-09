@@ -3,10 +3,11 @@ from django.contrib.auth import login, logout, update_session_auth_hash, authent
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import JsonResponse
-from .forms import RegisterForm, PetForm, AppointmentForm, BlogPostForm, VetLoginForm, ChangeUsernameForm, ChangeEmailForm
+from .forms import RegisterForm, PetForm, AppointmentForm, BlogPostForm, VetLoginForm, ChangeUsernameForm, ChangeEmailForm, AvatarUploadForm
 from .models import Pet, Appointment, Vet, BlogPost, UserProfile
 from datetime import datetime
-from django.core.mail import send_mail
+from django.core.mail import send_mail, EmailMultiAlternatives
+from email.mime.image import MIMEImage
 from django.conf import settings
 import logging
 from django.template.loader import render_to_string
@@ -64,31 +65,61 @@ def profile(request):
         return redirect('login')
     
     pets = Pet.objects.filter(owner=request.user)
+    # Получаем все записи пользователя, включая отмененные
     appointments = Appointment.objects.filter(pet__owner=request.user).order_by('-date', '-time')
+    
+    # Добавляем отладочную информацию
+    logger.info(f"Найдено записей: {appointments.count()}")
+    for appt in appointments:
+        logger.info(f"Запись {appt.id}: дата={appt.date}, время={appt.time}, статус={appt.status}")
     
     upcoming_appointments = []
     past_appointments = []
     now = datetime.now()
     
     for appointment in appointments:
-        # Пропускаем отмененные записи
-        if appointment.status == 'cancelled':
-            continue
-            
-        # Проверяем, является ли запись предстоящей
+        # Если запись в будущем или сегодня, добавляем в предстоящие
         if appointment.date > now.date() or (appointment.date == now.date() and appointment.time > now.time()):
             upcoming_appointments.append(appointment)
+            logger.info(f"Добавлена предстоящая запись {appointment.id} со статусом {appointment.status}")
         else:
             # Если запись в прошлом и её статус 'pending', меняем на 'completed'
             if appointment.status == 'pending':
                 appointment.status = 'completed'
                 appointment.save()
             past_appointments.append(appointment)
+            logger.info(f"Добавлена прошедшая запись {appointment.id} со статусом {appointment.status}")
+    
+    # Группируем записи по датам
+    upcoming_by_date = {}
+    past_by_date = {}
+    
+    # Добавляем все предстоящие записи в группу, включая отмененные
+    for appointment in upcoming_appointments:
+        date_key = appointment.date
+        if date_key not in upcoming_by_date:
+            upcoming_by_date[date_key] = []
+        upcoming_by_date[date_key].append(appointment)
+        logger.info(f"Запись {appointment.id} добавлена в upcoming_by_date для даты {date_key}")
+    
+    # Добавляем все прошедшие записи в группу
+    for appointment in past_appointments:
+        date_key = appointment.date
+        if date_key not in past_by_date:
+            past_by_date[date_key] = []
+        past_by_date[date_key].append(appointment)
+        logger.info(f"Запись {appointment.id} добавлена в past_by_date для даты {date_key}")
+    
+    # Сортируем даты
+    upcoming_by_date = dict(sorted(upcoming_by_date.items()))
+    past_by_date = dict(sorted(past_by_date.items(), reverse=True))
     
     context = {
         'pets': pets,
         'upcoming_appointments': upcoming_appointments,
         'past_appointments': past_appointments,
+        'upcoming_by_date': upcoming_by_date,
+        'past_by_date': past_by_date,
         'vets': Vet.objects.filter(available=True),
         'now': now
     }
@@ -164,27 +195,30 @@ def send_appointment_confirmation(user_email, appointment):
     
     # Отправка письма пациенту
     subject = 'Подтверждение записи на прием'
-    message = f'''
-Здравствуйте!
-
-Вы успешно записались на прием в нашу ветеринарную клинику. Ниже указаны детали вашей записи:
-
-📅 Дата: {appointment.date.strftime("%d.%m.%Y")}
-⏰ Время: {appointment.time.strftime("%H:%M")}
-👩‍⚕️ Врач: {appointment.vet.name}
-🐾 Питомец: {appointment.pet.name}
-
-Если у вас возникнут вопросы или потребуется перенести запись, пожалуйста, свяжитесь с нами заранее.
-
-С уважением,  
-Команда ветеринарной клиники DrHvost
-'''
-    from_email = settings.EMAIL_HOST_USER
-    recipient_list = [user_email]
-
+    
+    # Создаем сообщение
+    msg = EmailMultiAlternatives(
+        subject=subject,
+        body='',  # Пустое тело, так как используем HTML
+        from_email=settings.EMAIL_HOST_USER,
+        to=[user_email]
+    )
+    
+    # Прикрепляем изображение
+    with open('static/images/confirmation.png', 'rb') as f:
+        image = MIMEImage(f.read())
+        image.add_header('Content-ID', '<confirmation_image>')
+        msg.attach(image)
+    
+    # Рендерим HTML шаблон
+    html_content = render_to_string('clinic/email/appointment_confirmation.html', {
+        'appointment': appointment
+    })
+    msg.attach_alternative(html_content, "text/html")
+    
     try:
         logger.info(f"Отправка письма пациенту на адрес {user_email}")
-        send_mail(subject, message, from_email, recipient_list, fail_silently=False)
+        msg.send(fail_silently=False)
         logger.info("Письмо пациенту успешно отправлено")
     except Exception as e:
         logger.error(f"Ошибка при отправке письма пациенту: {e}")
@@ -193,26 +227,65 @@ def send_appointment_confirmation(user_email, appointment):
     if appointment.vet.email:
         logger.info(f"Подготовка письма для врача {appointment.vet.name} на адрес {appointment.vet.email}")
         vet_subject = 'Новая запись на приём'
-        vet_message = render_to_string('clinic/email/vet_appointment_notification.html', {
+        
+        # Создаем сообщение для врача
+        vet_msg = EmailMultiAlternatives(
+            subject=vet_subject,
+            body='',  # Пустое тело, так как используем HTML
+            from_email=settings.EMAIL_HOST_USER,
+            to=[appointment.vet.email]
+        )
+        
+        # Прикрепляем изображение
+        with open('static/images/vet_notification.png', 'rb') as f:
+            image = MIMEImage(f.read())
+            image.add_header('Content-ID', '<vet_notification_image>')
+            vet_msg.attach(image)
+        
+        # Рендерим HTML шаблон
+        vet_html_content = render_to_string('clinic/email/vet_appointment_notification.html', {
             'appointment': appointment
         })
-        vet_recipient_list = [appointment.vet.email]
+        vet_msg.attach_alternative(vet_html_content, "text/html")
 
         try:
             logger.info(f"Отправка письма врачу на адрес {appointment.vet.email}")
-            send_mail(
-                vet_subject,
-                '',
-                from_email,
-                vet_recipient_list,
-                html_message=vet_message,
-                fail_silently=False
-            )
+            vet_msg.send(fail_silently=False)
             logger.info("Письмо врачу успешно отправлено")
         except Exception as e:
             logger.error(f"Ошибка при отправке письма врачу: {e}")
     else:
         logger.warning(f"У врача {appointment.vet.name} не указан email адрес")
+
+def send_appointment_reminder(appointment):
+    """Отправка напоминания о приеме"""
+    subject = 'Напоминание о приеме'
+    
+    # Создаем сообщение
+    msg = EmailMultiAlternatives(
+        subject=subject,
+        body='',  # Пустое тело, так как используем HTML
+        from_email=settings.EMAIL_HOST_USER,
+        to=[appointment.pet.owner.email]
+    )
+    
+    # Прикрепляем изображение
+    with open('static/images/reminder.png', 'rb') as f:
+        image = MIMEImage(f.read())
+        image.add_header('Content-ID', '<reminder_image>')
+        msg.attach(image)
+    
+    # Рендерим HTML шаблон
+    html_content = render_to_string('clinic/email/appointment_reminder.html', {
+        'appointment': appointment
+    })
+    msg.attach_alternative(html_content, "text/html")
+    
+    try:
+        msg.send(fail_silently=False)
+        logger.info(f"Напоминание о приеме {appointment.id} успешно отправлено")
+    except Exception as e:
+        logger.error(f"Ошибка при отправке напоминания о приеме {appointment.id}: {e}")
 
 @login_required
 def get_available_times(request):
@@ -252,19 +325,26 @@ def get_available_times(request):
 @login_required
 def vet_profile(request):
     try:
-        vet = Vet.objects.filter(user=request.user).first()
-        if not vet:
+        # Проверяем, является ли пользователь врачом
+        if not hasattr(request.user, 'vet'):
             messages.error(request, 'У вас нет доступа к профилю врача.')
             return redirect('home')
 
+        vet = request.user.vet
         now = datetime.now()
+        
+        # Получаем все записи (включая отмененные)
         appointments = Appointment.objects.filter(vet=vet).order_by('date', 'time')
 
         upcoming = []
         past = []
+        pending_count = 0  # Счетчик для предстоящих записей со статусом "ожидает"
+        
         for appt in appointments:
             if appt.date > now.date() or (appt.date == now.date() and appt.time > now.time()):
                 upcoming.append(appt)
+                if appt.status == 'pending':
+                    pending_count += 1
             else:
                 # Если запись в прошлом и её статус 'pending', меняем на 'completed'
                 if appt.status == 'pending':
@@ -284,7 +364,8 @@ def vet_profile(request):
             'upcoming_appointments': upcoming,
             'past_appointments': past,
             'upcoming_by_date': upcoming_by_date,
-            'past_by_date': past_by_date
+            'past_by_date': past_by_date,
+            'pending_count': pending_count  # Передаем количество предстоящих записей
         })
     except Exception as e:
         logger.error(f"Ошибка в vet_profile: {str(e)}")
@@ -368,17 +449,32 @@ def cancel_appointment(request, appointment_id):
         return redirect('profile')
     
     if request.method == 'POST':
-        appointment.status = 'cancelled'
-        appointment.save()
-        messages.success(request, 'Запись успешно отменена')
+        try:
+            appointment.status = 'cancelled'
+            appointment.save()
+            logger.info(f"Запись {appointment_id} отменена. Статус: {appointment.status}")
+            messages.success(request, 'Запись успешно отменена')
+        except Exception as e:
+            logger.error(f"Ошибка при отмене записи {appointment_id}: {str(e)}")
+            messages.error(request, 'Произошла ошибка при отмене записи')
         return redirect('profile')
     
     return render(request, 'clinic/cancel_appointment.html', {'appointment': appointment})
 
 @login_required
-@require_GET
 def profile_info_tab(request):
-    return render(request, 'clinic/profile_tab_info.html', {})
+    if request.method == 'POST' and request.FILES.get('avatar'):
+        form = AvatarUploadForm(request.POST, request.FILES, instance=request.user.userprofile)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Аватар успешно обновлен!')
+            return redirect('profile')
+        else:
+            messages.error(request, 'Ошибка при загрузке аватара')
+    else:
+        form = AvatarUploadForm(instance=request.user.userprofile)
+    
+    return render(request, 'clinic/profile_tab_info.html', {'form': form})
 
 @login_required
 @require_GET
@@ -391,13 +487,19 @@ def profile_pets_tab(request):
 def profile_upcoming_tab(request):
     from datetime import datetime
     now = datetime.now()
-    appointments = request.user.pets.all().values_list('appointments', flat=True)
     upcoming_appointments = []
+    
     for pet in request.user.pets.all():
-        for appointment in pet.appointments.filter(status__in=['pending', 'completed']).order_by('date', 'time'):
-            if appointment.status == 'pending' and (appointment.date > now.date() or (appointment.date == now.date() and appointment.time > now.time())):
+        for appointment in pet.appointments.filter(
+            date__gte=now.date()
+        ).order_by('date', 'time'):
+            # Добавляем запись, если она в будущем или сегодня
+            if appointment.date > now.date() or (appointment.date == now.date() and appointment.time > now.time()):
                 upcoming_appointments.append(appointment)
-    return render(request, 'clinic/profile_tab_upcoming.html', {'upcoming_appointments': upcoming_appointments})
+    
+    return render(request, 'clinic/profile_tab_upcoming.html', {
+        'upcoming_appointments': upcoming_appointments
+    })
 
 @login_required
 @require_GET
@@ -497,3 +599,85 @@ def test_email(request):
     except Exception as e:
         logger.error(f"Ошибка при отправке письма: {str(e)}")
         return JsonResponse({'status': 'error', 'message': str(e)})
+
+@login_required
+def upload_avatar(request):
+    if request.method == 'POST':
+        form = AvatarUploadForm(request.POST, request.FILES, instance=request.user.userprofile)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Аватар успешно обновлен!')
+            return redirect('profile')
+    else:
+        form = AvatarUploadForm(instance=request.user.userprofile)
+    
+    return render(request, 'clinic/profile_tab_info.html', {
+        'form': form,
+        'show_upload_form': True
+    })
+
+@login_required
+def delete_account(request):
+    if request.method == 'POST':
+        password = request.POST.get('password')
+        if request.user.check_password(password):
+            # Удаляем все связанные данные
+            Pet.objects.filter(owner=request.user).delete()
+            Appointment.objects.filter(pet__owner=request.user).delete()
+            UserProfile.objects.filter(user=request.user).delete()
+            
+            # Удаляем пользователя
+            user = request.user
+            logout(request)
+            user.delete()
+            
+            messages.success(request, 'Ваш аккаунт успешно удален.')
+            return redirect('home')
+        else:
+            messages.error(request, 'Неверный пароль.')
+    
+    return render(request, 'clinic/delete_account.html')
+
+@login_required
+def vet_cancel_appointment(request, appointment_id):
+    appointment = get_object_or_404(Appointment, id=appointment_id)
+    
+    # Проверяем, что пользователь является врачом и это его запись
+    if not hasattr(request.user, 'vet') or appointment.vet != request.user.vet:
+        messages.error(request, 'У вас нет прав для отмены этой записи')
+        return redirect('vet_profile')
+    
+    if request.method == 'POST':
+        appointment.status = 'cancelled'
+        appointment.save()
+        
+        # Отправляем уведомление владельцу питомца
+        try:
+            subject = 'Отмена записи на приём'
+            message = f'''
+Здравствуйте!
+
+Ваша запись на приём была отменена врачом.
+
+Детали записи:
+📅 Дата: {appointment.date.strftime("%d.%m.%Y")}
+⏰ Время: {appointment.time.strftime("%H:%M")}
+👩‍⚕️ Врач: {appointment.vet.name}
+🐾 Питомец: {appointment.pet.name}
+
+Если у вас возникли вопросы, пожалуйста, свяжитесь с нами.
+
+С уважением,  
+Команда ветеринарной клиники DrHvost
+'''
+            from_email = settings.EMAIL_HOST_USER
+            recipient_list = [appointment.pet.owner.email]
+            
+            send_mail(subject, message, from_email, recipient_list, fail_silently=False)
+        except Exception as e:
+            logger.error(f"Ошибка при отправке уведомления об отмене записи: {e}")
+        
+        messages.success(request, 'Запись успешно отменена')
+        return redirect('vet_profile')
+    
+    return redirect('vet_profile')

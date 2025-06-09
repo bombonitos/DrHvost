@@ -2,6 +2,7 @@ from celery import shared_task
 from .models import Appointment
 from django.core.mail import send_mail
 from django.conf import settings
+
 @shared_task
 def send_appointment_reminder(appointment_id):
     try:
@@ -22,6 +23,7 @@ def send_appointment_reminder(appointment_id):
             [user_email],
             fail_silently=False
         )
-
     except Appointment.DoesNotExist:
         print("Прием не найден.")
+    except Exception as e:
+        print(f"Ошибка при отправке напоминания: {e}")

@@ -13,49 +13,44 @@
             margin: 0 auto;
             padding: 20px;
         }
-        .header {
-            background-color: #4169E1;
-            color: white;
-            padding: 20px;
-            text-align: center;
-            border-radius: 5px 5px 0 0;
+        .header-image {
+            width: 100%;
+            max-width: 500px;
+            height: auto;
+            margin-bottom: 20px;
         }
-        .content {
+        .details {
             background-color: #f9f9f9;
             padding: 20px;
-            border-radius: 0 0 5px 5px;
+            border-radius: 5px;
+            margin: 20px 0;
         }
         .footer {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 12px;
+            margin-top: 30px;
+            font-size: 0.9em;
             color: #666;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <h1>Подтверждение записи на прием</h1>
+        <img src="cid:confirmation_image" alt="Подтверждение записи" class="header-image">
+        
+        <h2>Здравствуйте!</h2>
+        
+        <p>Вы успешно записались на прием в нашу ветеринарную клинику. Ниже указаны детали вашей записи:</p>
+        
+        <div class="details">
+            <p>📅 <strong>Дата:</strong> {{ appointment.date|date:"d.m.Y" }}</p>
+            <p>⏰ <strong>Время:</strong> {{ appointment.time|time:"H:i" }}</p>
+            <p>👩‍⚕️ <strong>Врач:</strong> {{ appointment.vet.name }}</p>
+            <p>🐾 <strong>Питомец:</strong> {{ appointment.pet.name }}</p>
         </div>
-        <div class="content">
-            <p>Здравствуйте, {{ patient.get_full_name }}!</p>
-            
-            <p>Ваша запись на прием подтверждена:</p>
-            
-            <ul>
-                <li><strong>Дата:</strong> {{ appointment.date }}</li>
-                <li><strong>Время:</strong> {{ appointment.time }}</li>
-                <li><strong>Врач:</strong> {{ vet.name }}</li>
-                <li><strong>Специализация:</strong> {{ vet.specialty }}</li>
-            </ul>
 
-            <p>Если у вас возникли вопросы или вам нужно перенести прием, пожалуйста, свяжитесь с нами.</p>
-            
-            <p>С уважением,<br>Команда ветеринарной клиники</p>
-        </div>
+        <p>Если у вас возникнут вопросы или потребуется перенести запись, пожалуйста, свяжитесь с нами заранее.</p>
+        
         <div class="footer">
-            <p>Это письмо сформировано автоматически. Пожалуйста, не отвечайте на него.</p>
+            <p>С уважением,<br>Команда ветеринарной клиники DrHvost</p>
         </div>
     </div>
 </body>

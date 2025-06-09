@@ -46,5 +46,7 @@ urlpatterns = [
     path('profile/change-username/', views.change_username, name='change_username'),
     path('profile/change-email/', views.change_email, name='change_email'),
     path('test-email/', views.test_email, name='test_email'),
+    path('profile/delete-account/', views.delete_account, name='delete_account'),
+    path('vet/appointment/<int:appointment_id>/cancel/', views.vet_cancel_appointment, name='vet_cancel_appointment'),
 ]
 
