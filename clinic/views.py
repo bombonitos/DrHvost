@@ -1,10 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout, update_session_auth_hash, authenticate
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django.http import JsonResponse
 from .forms import RegisterForm, PetForm, AppointmentForm, BlogPostForm, VetLoginForm, ChangeUsernameForm, ChangeEmailForm, AvatarUploadForm
-from .models import Pet, Appointment, Vet, BlogPost, UserProfile
+from .models import Pet, Appointment, Vet, BlogPost, UserProfile, Chat, ChatMessage
 from datetime import datetime
 from django.core.mail import send_mail, EmailMultiAlternatives
 from email.mime.image import MIMEImage
@@ -14,6 +14,9 @@ from django.template.loader import render_to_string
 from django.views.decorators.http import require_GET, require_POST
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.models import User
+from django.views.decorators.csrf import csrf_exempt
+from django.utils import timezone
+import json
 
 logger = logging.getLogger(__name__)
 
@@ -681,3 +684,94 @@ def vet_cancel_appointment(request, appointment_id):
         return redirect('vet_profile')
     
     return redirect('vet_profile')
+
+@login_required
+def user_chat(request):
+    # Получить или создать чат для пользователя
+    chat, created = Chat.objects.get_or_create(user=request.user)
+    chat_messages = chat.messages.order_by('timestamp')
+    # Базовые подсказки
+    suggestions = [
+        "Где вы находитесь?",
+        "Как записаться на прием?",
+        "Какие услуги вы оказываете?",
+        "Какой график работы?"
+    ]
+    return render(request, 'clinic/chat/user_chat.html', {
+        'chat': chat,
+        'chat_messages': chat_messages,
+        'suggestions': suggestions
+    })
+
+@login_required
+@user_passes_test(lambda u: u.is_staff or u.is_superuser)
+def admin_chat_list(request):
+    # Список всех чатов (по пользователям)
+    chats = Chat.objects.select_related('user').order_by('-created_at')
+    return render(request, 'clinic/chat/admin_chat_list.html', {'chats': chats})
+
+@login_required
+@user_passes_test(lambda u: u.is_staff or u.is_superuser)
+def admin_chat_detail(request, chat_id):
+    chat = get_object_or_404(Chat, id=chat_id)
+    chat_messages = chat.messages.order_by('timestamp')
+    # Сбросить флаг непрочитанных сообщений
+    if chat.has_unread_messages:
+        chat.has_unread_messages = False
+        chat.save(update_fields=["has_unread_messages"])
+    return render(request, 'clinic/chat/admin_chat_detail.html', {
+        'chat': chat,
+        'chat_messages': chat_messages
+    })
+
+@login_required
+@csrf_exempt
+def send_message(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        chat_id = data.get('chat_id')
+        message = data.get('message')
+        is_admin = data.get('is_admin', False)
+        chat = get_object_or_404(Chat, id=chat_id)
+        msg = ChatMessage.objects.create(
+            chat=chat,
+            sender=request.user,
+            message=message,
+            is_admin=is_admin,
+            timestamp=timezone.now()
+        )
+        # Если пишет пользователь, отмечаем чат как непрочитанный для админа
+        if not is_admin:
+            chat.has_unread_messages = True
+            chat.save(update_fields=["has_unread_messages"])
+        return JsonResponse({'status': 'ok', 'message': msg.message, 'sender': msg.sender.username, 'timestamp': msg.timestamp.strftime('%d.%m.%Y %H:%M')})
+    return JsonResponse({'status': 'error'}, status=400)
+
+@login_required
+def get_messages(request, chat_id):
+    chat = get_object_or_404(Chat, id=chat_id)
+    messages = chat.messages.order_by('timestamp')
+    data = [
+        {
+            'sender': m.sender.username,
+            'is_admin': m.is_admin,
+            'message': m.message,
+            'timestamp': m.timestamp.strftime('%d.%m.%Y %H:%M')
+        } for m in messages
+    ]
+    return JsonResponse({'messages': data})
+
+@login_required
+@require_GET
+def chat_meta(request):
+    chat, created = Chat.objects.get_or_create(user=request.user)
+    suggestions = [
+        "Где вы находитесь?",
+        "Как записаться на прием?",
+        "Какие услуги вы оказываете?",
+        "Какой график работы?"
+    ]
+    return JsonResponse({
+        'chat_id': chat.id,
+        'suggestions': suggestions
+    })

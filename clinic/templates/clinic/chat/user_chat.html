@@ -1,0 +1,199 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<style>
+#chat-widget-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: 9999;
+    background: #4169E1;
+    color: #fff;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    cursor: pointer;
+}
+#chat-window {
+    position: fixed;
+    bottom: 100px;
+    right: 30px;
+    width: 350px;
+    max-width: 95vw;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.2);
+    z-index: 10000;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+}
+#chat-header {
+    background: #4169E1;
+    color: #fff;
+    padding: 12px 16px;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+#chat-messages {
+    height: 300px;
+    overflow-y: auto;
+    padding: 16px;
+    background: #f9f9f9;
+    font-size: 1rem;
+}
+#chat-input-row {
+    display: flex;
+    border-top: 1px solid #eee;
+    background: #fff;
+}
+#chat-input-row input {
+    flex: 1;
+    border: none;
+    padding: 12px;
+    font-size: 1rem;
+    outline: none;
+}
+#chat-input-row button {
+    background: #4169E1;
+    color: #fff;
+    border: none;
+    padding: 0 20px;
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+.suggestion-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 8px 0 0 0;
+}
+.suggestion-btn {
+    background: #e7f0ff;
+    color: #4169E1;
+    border: none;
+    border-radius: 16px;
+    padding: 4px 12px;
+    cursor: pointer;
+    font-size: 0.95rem;
+}
+.chat-message {
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+}
+.chat-message.user {
+    align-items: flex-end;
+}
+.chat-message.admin {
+    align-items: flex-start;
+}
+.chat-bubble {
+    padding: 8px 14px;
+    border-radius: 16px;
+    max-width: 80%;
+    display: inline-block;
+}
+.chat-message.user .chat-bubble {
+    background: #4169E1;
+    color: #fff;
+}
+.chat-message.admin .chat-bubble {
+    background: #f1f1f1;
+    color: #222;
+}
+</style>
+
+<div id="chat-widget-btn" title="Чат с админом">
+    <i class="fas fa-comments"></i>
+</div>
+
+<div id="chat-window">
+    <div id="chat-header">
+        <span>Чат с администратором</span>
+        <span style="cursor:pointer;" onclick="toggleChat()">&times;</span>
+    </div>
+    <div class="suggestion-list">
+        {% for s in suggestions %}
+        <button class="suggestion-btn" onclick="insertSuggestion('{{ s }}')">{{ s }}</button>
+        {% endfor %}
+    </div>
+    <div id="chat-messages">
+        {% for msg in chat_messages %}
+        <div class="chat-message {% if msg.is_admin %}admin{% else %}user{% endif %}">
+            <div class="chat-bubble">{{ msg.message }}</div>
+            <small style="font-size:0.8em; color:#888;">{{ msg.timestamp|date:'d.m.Y H:i' }}</small>
+        </div>
+        {% endfor %}
+    </div>
+    <div id="chat-input-row">
+        <input type="text" id="chat-input" placeholder="Введите сообщение..." autocomplete="off">
+        <button onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+    </div>
+</div>
+
+<script>
+const chatBtn = document.getElementById('chat-widget-btn');
+const chatWindow = document.getElementById('chat-window');
+const chatMessages = document.getElementById('chat-messages');
+const chatInput = document.getElementById('chat-input');
+const chatId = '{{ chat.id }}';
+
+function toggleChat() {
+    chatWindow.style.display = chatWindow.style.display === 'flex' ? 'none' : 'flex';
+    if (chatWindow.style.display === 'flex') {
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+}
+chatBtn.onclick = toggleChat;
+
+function insertSuggestion(text) {
+    chatInput.value = text;
+    chatInput.focus();
+}
+
+function sendMessage() {
+    const msg = chatInput.value.trim();
+    if (!msg) return;
+    fetch('{% url "send_message" %}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({chat_id: chatId, message: msg, is_admin: false})
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.status === 'ok') {
+            chatInput.value = '';
+            loadMessages();
+        }
+    });
+}
+
+function loadMessages() {
+    fetch(`/chat/messages/${chatId}/`)
+        .then(r => r.json())
+        .then(data => {
+            chatMessages.innerHTML = '';
+            data.messages.forEach(m => {
+                const div = document.createElement('div');
+                div.className = 'chat-message ' + (m.is_admin ? 'admin' : 'user');
+                div.innerHTML = `<div class="chat-bubble">${m.message}</div><small style="font-size:0.8em; color:#888;">${m.timestamp}</small>`;
+                chatMessages.appendChild(div);
+            });
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        });
+}
+
+setInterval(loadMessages, 3000);
+</script>
+{% endblock %} 

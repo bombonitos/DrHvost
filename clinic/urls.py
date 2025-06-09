@@ -48,5 +48,11 @@ urlpatterns = [
     path('test-email/', views.test_email, name='test_email'),
     path('profile/delete-account/', views.delete_account, name='delete_account'),
     path('vet/appointment/<int:appointment_id>/cancel/', views.vet_cancel_appointment, name='vet_cancel_appointment'),
+    path('chat/', views.user_chat, name='user_chat'),
+    path('staff/chats/', views.admin_chat_list, name='admin_chat_list'),
+    path('staff/chats/<int:chat_id>/', views.admin_chat_detail, name='admin_chat_detail'),
+    path('chat/send/', views.send_message, name='send_message'),
+    path('chat/messages/<int:chat_id>/', views.get_messages, name='get_messages'),
+    path('chat/meta/', views.chat_meta, name='chat_meta'),
 ]
 

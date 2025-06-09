@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-3">Чат с пользователем: <strong>{{ chat.user.username }}</strong></h2>
+    <div class="card shadow-sm mb-3">
+        <div class="card-body" id="admin-chat-messages" style="height:350px; overflow-y:auto; background:#f9f9f9;">
+            <!-- Сообщения будут подгружаться только через JS -->
+        </div>
+        <div class="card-footer bg-white">
+            <div class="input-group">
+                <input type="text" id="admin-chat-input" class="form-control" placeholder="Введите сообщение...">
+                <button class="btn btn-primary" onclick="sendAdminMessage()"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </div>
+    </div>
+    <a href="{% url 'admin_chat_list' %}" class="btn btn-outline-secondary">Назад к списку чатов</a>
+</div>
+<script>
+const adminChatId = '{{ chat.id }}';
+const adminChatMessages = document.getElementById('admin-chat-messages');
+const adminChatInput = document.getElementById('admin-chat-input');
+let lastMessageTimestamp = '';
+
+function sendAdminMessage() {
+    const msg = adminChatInput.value.trim();
+    if (!msg) return;
+    fetch('{% url "send_message" %}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({chat_id: adminChatId, message: msg, is_admin: true})
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.status === 'ok') {
+            adminChatInput.value = '';
+            loadAdminMessages();
+        }
+    });
+}
+
+function loadAdminMessages() {
+    fetch(`/chat/messages/${adminChatId}/`)
+        .then(r => r.json())
+        .then(data => {
+            if (data.messages.length > 0) {
+                const latestMessage = data.messages[data.messages.length - 1];
+                if (latestMessage.timestamp !== lastMessageTimestamp) {
+                    adminChatMessages.innerHTML = '';
+                    data.messages.forEach(m => {
+                        const div = document.createElement('div');
+                        div.className = 'mb-2 d-flex ' + (m.is_admin ? 'justify-content-end' : 'justify-content-start');
+                        div.innerHTML = `<div class="p-2 rounded ${m.is_admin ? 'bg-primary text-white' : 'bg-light text-dark'}" style="max-width:70%;">${m.message}<div style=\"font-size:0.8em; color:#888;\">${m.timestamp}</div></div>`;
+                        adminChatMessages.appendChild(div);
+                    });
+                    lastMessageTimestamp = latestMessage.timestamp;
+                    adminChatMessages.scrollTop = adminChatMessages.scrollHeight;
+                }
+            }
+        });
+}
+
+// Загружаем сообщения сразу при загрузке страницы
+loadAdminMessages();
+// Затем обновляем каждые 3 секунды
+setInterval(loadAdminMessages, 3000);
+
+// Добавляем обработку Enter для отправки сообщения
+adminChatInput.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        sendAdminMessage();
+    }
+});
+</script>
+{% endblock %} 

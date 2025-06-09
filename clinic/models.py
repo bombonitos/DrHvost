@@ -140,3 +140,21 @@ def save_user_profile(sender, instance, **kwargs):
     profile = getattr(instance, 'profile', None)
     if profile:
         instance.profile.save()
+
+class Chat(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='chats')
+    created_at = models.DateTimeField(auto_now_add=True)
+    has_unread_messages = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"Чат с {self.user.username}"
+
+class ChatMessage(models.Model):
+    chat = models.ForeignKey(Chat, on_delete=models.CASCADE, related_name='messages')
+    sender = models.ForeignKey(User, on_delete=models.CASCADE)
+    message = models.TextField()
+    is_admin = models.BooleanField(default=False)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{'Админ' if self.is_admin else self.sender.username}: {self.message[:30]}"
